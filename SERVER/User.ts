@@ -37,7 +37,7 @@ export class User
   };
   
   
-  static connect_player = function(g_GameMaps : Map<GameMap_ID, GameMap>, p_GameMap_ID : GameMap_ID, g_Users : Map<string, User>, uuID : string) : { status : Status }
+  static connect_player (g_GameMaps : Map<GameMap_ID, GameMap>, p_GameMap_ID : GameMap_ID, g_Users : Map<string, User>, uuID : string) : { status : Status }
   {
     // @ts-ignore
     const ReVa__GameMap__connect_player = GameMap.connect_player(g_GameMaps, p_GameMap_ID, g_Users.get(uuID).player);
@@ -45,12 +45,12 @@ export class User
     if (ReVa__GameMap__connect_player.status == Status.OK)
     {
       // @ts-ignore
-      g_GameMaps.get(GameMap_ID.Sandbox).socket_connection(g_Users.get(uuID));
+      // g_GameMaps.get(GameMap_ID.Sandbox).handle_socket_messages(g_Users.get(uuID));
     };
     
     return ({ status: ReVa__GameMap__connect_player.status });
   };
-  static connect = function(g_GameMaps : Map<GameMap_ID, GameMap>, p_GameMap_ID : GameMap_ID, g_Users : Map<string, User>, uuID : string, player_ws__new : WebSocket) : { status : Status, wasUserAlreadyConnected : boolean, player_ws__old : (WebSocket|undefined) }
+  static connect(g_GameMaps : Map<GameMap_ID, GameMap>, p_GameMap_ID : GameMap_ID, g_Users : Map<string, User>, uuID : string, player_ws__new : WebSocket) : { status : Status, wasUserAlreadyConnected : boolean, player_ws__old : (WebSocket|undefined) }
   {
     const ssID = v4.generate();
     
@@ -84,7 +84,7 @@ export class User
     return ({ status: ReVa__User__connect_player.status, wasUserAlreadyConnected, player_ws__old });
   };
   
-  static disconnect_player = function(g_GameMaps : Map<GameMap_ID, GameMap>, g_Users : Map<string, User>, uuID : string) : { status : Status }
+  static disconnect_player(g_GameMaps : Map<GameMap_ID, GameMap>, g_Users : Map<string, User>, uuID : string) : { status : Status }
   {
     const ReVa__GameMap__disconnect_player = GameMap.disconnect_player(g_GameMaps, uuID);
     
@@ -97,7 +97,7 @@ export class User
     
     return ({ status: ReVa__GameMap__disconnect_player.status });
   };
-  static disconnect = function(g_GameMaps : Map<GameMap_ID, GameMap>, g_Users : Map<string, User>, uuID : string)
+  static disconnect(g_GameMaps : Map<GameMap_ID, GameMap>, g_Users : Map<string, User>, uuID : string)
   {
     if (g_Users.get(uuID) == undefined)
     {
