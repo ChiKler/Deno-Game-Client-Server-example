@@ -51,13 +51,29 @@ export class GameMap {
   };
   static Players_BufferIn = class extends GameMap.Players_Buffer<Player> {
   };
-  static Players_BufferOut = class extends GameMap.Players_Buffer<
-    {
-      player: Player;
-      isToBeDisconnected: boolean;
-      GameMap_ID__target: (GameMap_ID | undefined);
+  static Players_BufferOut__data__Ty = class {
+    player: Player;
+    isToBeDisconnected: boolean;
+    GameMap_ID__target: (GameMap_ID | undefined);
+
+    constructor(
+      player: Player,
+      isToBeDisconnected: boolean,
+      GameMap_ID__target?: GameMap_ID,
+    ) {
+      this.player = player;
+      this.isToBeDisconnected = isToBeDisconnected;
+
+      if (isToBeDisconnected) {
+        this.GameMap_ID__target = undefined;
+      } else {
+        this.GameMap_ID__target = GameMap_ID__target;
+      }
     }
-  > {
+  };
+
+  static Players_BufferOut = class extends // @ts-ignore
+  GameMap.Players_Buffer<GameMap.Players_BufferOut__data__Ty> {
   };
 
   static connect_player(
@@ -195,18 +211,18 @@ export class GameMap {
       };
 
       g__GameMaps.forEach((l__GameMap: GameMap) => {
-        let l__GameMap__Players_BufferOut__take__ReVa: ({
-          player: Player;
-          isToBeDisconnected: boolean;
-          GameMap_ID__target: (GameMap_ID | undefined);
-        } | undefined);
+        let l__GameMap__Players_BufferOut__take__ReVa:
+          // @ts-ignore
+          (GameMap.Players_BufferOut__data__Ty | undefined);
         while (
           (l__GameMap__Players_BufferOut__take__ReVa = l__GameMap
             .#m__Players_BufferOut.take()) !=
             undefined
         ) {
           if (l__GameMap__Players_BufferOut__take__ReVa.isToBeDisconnected) {
-            // ...
+            console.log(
+              `The Player with uuID ${l__GameMap__Players_BufferOut__take__ReVa.player.uuID} is to be disconnected from g__GameMaps. This option needs to be implemented.`,
+            );
           } else {
             if (
               g__GameMaps.get(
