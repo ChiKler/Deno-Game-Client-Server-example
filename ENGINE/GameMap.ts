@@ -9,10 +9,10 @@ import { sleep } from "../vendor/utility/sleep.ts";
 // @ts-ignore
 import { Status } from 'https://deno.land/std@0.91.0/http/http_status.ts';
 // @ts-ignore
-import { WebSocket, isWebSocketCloseEvent } from "https://deno.land/std@0.91.0/ws/mod.ts";
+import { isWebSocketCloseEvent } from "https://deno.land/std@0.91.0/ws/mod.ts";
 
 // @ts-ignore
-import { User } from "../SERVER/User.ts";
+import { User } from "../SERVER/scripts/User.ts";
 
 
 
@@ -25,32 +25,32 @@ export enum GameMap_ID
 
 export class GameMap
 {
-    readonly ID : GameMap_ID;
+    readonly m__GameMap_ID : GameMap_ID;
     
     #isRunning : boolean;
     
-    players : Map<string, Player>;
+    m__Players : Map<string, Player>;
   
   
-  constructor(ID : GameMap_ID)
+  constructor(p__GameMap_ID : GameMap_ID)
   {
-    this.ID = ID;
+    this.m__GameMap_ID = p__GameMap_ID;
     
     this.#isRunning = false;
     
-    this.players = new Map<string, Player>();
+    this.m__Players = new Map<string, Player>();
   };
   
   
-  static connect_player(g_GameMaps : Map<GameMap_ID, GameMap>, p_GameMap_ID : GameMap_ID, player : Player) : { status : Status }
+  static connect_player(g__GameMaps : Map<GameMap_ID, GameMap>, p__GameMap_ID : GameMap_ID, player : Player) : { status : Status }
   {
-    if (g_GameMaps.get(p_GameMap_ID) == undefined)
+    if (g__GameMaps.get(p__GameMap_ID) == undefined)
     {
       return ({ status: Status.NotFound });
     }
     else
     {
-      //this.players_buffer_in.push(player);
+      //this.m__Players_buffer_in.push(player);
       
       
       return ({ status: Status.NotImplemented });
@@ -58,25 +58,25 @@ export class GameMap
     };
   };
   
-  static disconnect_player(g_GameMaps : Map<GameMap_ID, GameMap>, uuID : string) : { status : Status }
+  static disconnect_player(g__GameMaps : Map<GameMap_ID, GameMap>, uuID : string) : { status : Status }
   {
-    const l_GameMap_IDs = [...g_GameMaps.keys()];
-    let l_GameMap_ID : GameMap_ID;
+    const l__GameMap_IDs = [...g__GameMaps.keys()];
+    let l__GameMap_ID : GameMap_ID;
     
     let found = false;
     let i = 0;
     
-    while((found == false) && (i < l_GameMap_IDs.length))
+    while((found == false) && (i < l__GameMap_IDs.length))
     {
       // @ts-ignore
-      if (g_GameMaps.get(l_GameMap_IDs[i]).players.get(uuID) == undefined)
+      if (g__GameMaps.get(l__GameMap_IDs[i]).m__Players.get(uuID) == undefined)
       {
         i++;
       }
       else
       {
         found = true;
-        l_GameMap_ID = l_GameMap_IDs[i];
+        l__GameMap_ID = l__GameMap_IDs[i];
         break;
       };
     };
@@ -87,7 +87,7 @@ export class GameMap
     }
     else
     {
-      //this.players_buffer_out.push(g_GameMaps.get(l_GameMap_ID).players.get(uuID));
+      //this.m__Players_buffer_out.push(g__GameMaps.get(l__GameMap_ID).m__Players.get(uuID));
       
       
       return ({ status: Status.NotImplemented });
@@ -131,7 +131,7 @@ export class GameMap
     
     if (elapsed_ms() > max_ms)
     {
-      console.warn(`The GameMap with ID ${this.ID} took ${(elapsed_ms() - max_ms)}ms longer updating than it should have.`);
+      console.warn(`The GameMap with ID ${this.m__GameMap_ID} took ${(elapsed_ms() - max_ms)}ms longer updating than it should have.`);
     }
     else
     if (elapsed_ms() < min_ms)
