@@ -165,6 +165,24 @@ export class GameMap {
       return (elapsed_ms() * 0.001);
     };
 
+    // -------- COMENT THIS SECTION TO SOLVE THE SUPPOSED BUG -------- //
+
+    this.#m__Players.forEach((l__Player__i: Player) => {
+      this.#m__Players.forEach((l__Player__j: Player) => {
+        if (l__Player__j.uuID != l__Player__i.uuID) {
+          if (!l__Player__i.ws.isClosed) {
+            ws_msg_send(l__Player__i.ws, {
+              kind: "Player_WSMsg",
+              id: Player_WSMsg_ID.Sighting,
+              body: { p__Player: l__Player__j },
+            });
+          }
+        }
+      });
+    });
+
+    // -------- COMENT THIS SECTION TO SOLVE THE SUPPOSED BUG -------- //
+
     let m__Players_BufferIn__take__ReVa: (Player | undefined);
     while (
       (m__Players_BufferIn__take__ReVa = this.#m__Players_BufferIn.take()) !=
