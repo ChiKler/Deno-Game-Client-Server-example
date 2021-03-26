@@ -34,7 +34,7 @@ async function handle_requests()
   {
     const l__User__connect__ReVa = User.connect(g__GameMaps, GameMap_ID.Sandbox, g__Users, uuID, player_ws__new);
     
-    console.log(`Connection attempt: { uuID: ${uuID},\n${l__User__connect__ReVa}\n} }`);
+    console.log(`Connection attempt: {\n  uuID: ${uuID},\n  l__User__connect__ReVa: {\n    ${l__User__connect__ReVa.status}\n    ${l__User__connect__ReVa.wasUserAlreadyConnected}\n    ${l__User__connect__ReVa.player_ws__old}\n  }\n}`);
   };
   
   
@@ -87,6 +87,12 @@ async function handle_requests()
       req.respond({ status:200, headers, body: await Deno.open("../CLIENT/scripts/canvas.js") });
     }
     else
+    if (req.method === "GET" && req.url === "/scripts/init.js")
+    {
+      const headers : Headers = new Headers(); headers.set("Content-Type", "text/javascript");
+      req.respond({ status:200, headers, body: await Deno.open("../CLIENT/scripts/init.js") });
+    }
+    else
     if (req.method === "GET" && req.url === "/scripts/main.js")
     {
       const headers : Headers = new Headers(); headers.set("Content-Type", "text/javascript");
@@ -97,6 +103,12 @@ async function handle_requests()
     {
       const headers : Headers = new Headers(); headers.set("Content-Type", "text/javascript");
       req.respond({ status:200, headers, body: await Deno.open("../CLIENT/scripts/mod.js") });
+    }
+    else
+    if (req.method === "GET" && req.url === "/scripts/websockets.js")
+    {
+      const headers : Headers = new Headers(); headers.set("Content-Type", "text/javascript");
+      req.respond({ status:200, headers, body: await Deno.open("../CLIENT/scripts/websockets.js") });
     }
     
     
