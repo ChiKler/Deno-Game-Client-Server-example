@@ -35,29 +35,7 @@ export class GameMap {
     this.m__Players_BufferOut = new GameMap.Players_BufferOut();
   }
 
-  static Players_BufferIn = class {
-    #data: Array<Player>; // should use ArrayBuffer as buffer and Uint8Array as view
-
-    constructor() {
-      this.#data = new Array<Player>();
-    }
-
-    pass(player: Player): number {
-      return (this.#data.push(player));
-    }
-    take(): Player {
-      return (this.#data[this.#data.length - 1]);
-    }
-    read(): void { // take callback, do forEach
-    }
-  };
-  static Players_BufferOut = class<
-    T extends {
-      player: Player;
-      isToBeDisconnected: boolean;
-      GameMap__target: (GameMap_ID | undefined);
-    },
-  > {
+  static Players_Buffer = class<T> {
     #data: Array<T>; // should use ArrayBuffer as buffer and Uint8Array as view
 
     constructor() {
@@ -72,6 +50,16 @@ export class GameMap {
     }
     read(): void { // take callback, do forEach
     }
+  };
+  static Players_BufferIn = class extends GameMap.Players_Buffer<Player> {
+  };
+  static Players_BufferOut = class extends GameMap.Players_Buffer<
+    {
+      player: Player;
+      isToBeDisconnected: boolean;
+      GameMap__target: (GameMap_ID | undefined);
+    }
+  > {
   };
 
   static connect_player(
