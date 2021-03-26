@@ -32,7 +32,7 @@ async function handle_requests() {
     );
 
     console.log(
-      `Connection attempt: {\n  uuID: ${uuID},\n  l__User__connect__ReVa: {\n    ${l__User__connect__ReVa.status}\n    ${l__User__connect__ReVa.wasUserAlreadyConnected}\n    ${l__User__connect__ReVa.player_ws__old}\n  }\n}`,
+      `Connection attempt: {\n  uuID: ${uuID},\n  l__User__connect__ReVa: {\n    status: ${l__User__connect__ReVa.status}\n    wasUserAlreadyConnected: ${l__User__connect__ReVa.wasUserAlreadyConnected}\n    player_ws__old: ${l__User__connect__ReVa.player_ws__old}\n  }\n}`,
     );
   };
 
