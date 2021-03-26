@@ -20,9 +20,9 @@ export class GameMap {
   #m__Players: Map<string, Player>;
 
   // @ts-ignore
-  m__Players_BufferIn: GameMap.Players_BufferIn;
+  #m__Players_BufferIn: GameMap.Players_BufferIn;
   // @ts-ignore
-  m__Players_BufferOut: GameMap.Players_BufferOut;
+  #m__Players_BufferOut: GameMap.Players_BufferOut;
 
   constructor(p__GameMap_ID: GameMap_ID) {
     this.m__GameMap_ID = p__GameMap_ID;
@@ -31,8 +31,8 @@ export class GameMap {
 
     this.#m__Players = new Map<string, Player>();
 
-    this.m__Players_BufferIn = new GameMap.Players_BufferIn();
-    this.m__Players_BufferOut = new GameMap.Players_BufferOut();
+    this.#m__Players_BufferIn = new GameMap.Players_BufferIn();
+    this.#m__Players_BufferOut = new GameMap.Players_BufferOut();
   }
 
   static Players_Buffer = class<T> {
@@ -55,7 +55,7 @@ export class GameMap {
     {
       player: Player;
       isToBeDisconnected: boolean;
-      GameMap__target: (GameMap_ID | undefined);
+      GameMap_ID__target: (GameMap_ID | undefined);
     }
   > {
   };
@@ -69,7 +69,7 @@ export class GameMap {
       return ({ status: Status.NotFound });
     } else {
       // @ts-ignore
-      g__GameMaps.get(p__GameMap_ID).m__Players_BufferIn.pass(player);
+      g__GameMaps.get(p__GameMap_ID).#m__Players_BufferIn.pass(player);
 
       return ({ status: Status.OK });
     }
@@ -102,11 +102,11 @@ export class GameMap {
       return ({ status: Status.NotFound });
     } else {
       // @ts-ignore
-      g__GameMaps.get(p__GameMap_ID).m__Players_BufferOut.pass({
+      g__GameMaps.get(p__GameMap_ID).#m__Players_BufferOut.pass({
         // @ts-ignore
         player: this.#m__Players.get(uuID).player,
         isToBeDisconnected: true,
-        GameMap__target: undefined,
+        GameMap_ID__target: undefined,
       });
 
       return ({ status: Status.OK });
@@ -137,11 +137,9 @@ export class GameMap {
       return (elapsed_ms() * 0.001);
     };
 
-    ///
-
     let m__Players_BufferIn__take__ReVa: (Player | undefined);
     while (
-      (m__Players_BufferIn__take__ReVa = this.m__Players_BufferIn.take()) !=
+      (m__Players_BufferIn__take__ReVa = this.#m__Players_BufferIn.take()) !=
         undefined
     ) {
       this.#m__Players.set(
@@ -180,4 +178,66 @@ export class GameMap {
       this.#isRunning = false;
     }
   };
+
+  static async g__GameMaps__handler(
+    g__GameMaps: Map<GameMap_ID, GameMap>,
+    g__server__isRunning: boolean,
+  ): Promise<void> {
+    g__GameMaps.set(GameMap_ID.Sandbox, new GameMap(GameMap_ID.Sandbox));
+
+    while (g__server__isRunning) {
+      const begin_ms = time_stamp();
+      const min_ms = 20;
+      const max_ms = 40;
+
+      const elapsed_ms = (): number => {
+        return (time_stamp() - begin_ms);
+      };
+
+      g__GameMaps.forEach((l__GameMap: GameMap) => {
+        let l__GameMap__Players_BufferOut__take__ReVa: ({
+          player: Player;
+          isToBeDisconnected: boolean;
+          GameMap_ID__target: (GameMap_ID | undefined);
+        } | undefined);
+        while (
+          (l__GameMap__Players_BufferOut__take__ReVa = l__GameMap
+            .#m__Players_BufferOut.take()) !=
+            undefined
+        ) {
+          if (l__GameMap__Players_BufferOut__take__ReVa.isToBeDisconnected) {
+            // ...
+          } else {
+            if (
+              g__GameMaps.get(
+                // @ts-ignore
+                l__GameMap__Players_BufferOut__take__ReVa.GameMap_ID__target,
+              ) != undefined
+            ) {
+              // @ts-ignore
+              g__GameMaps.get(
+                // @ts-ignore
+                l__GameMap__Players_BufferOut__take__ReVa.GameMap_ID__target,
+              ).#m__Players_BufferIn.pass(
+                l__GameMap__Players_BufferOut__take__ReVa.player,
+              );
+            }
+          }
+        }
+      });
+
+      if (elapsed_ms() > max_ms) {
+        console.warn(
+          `GameMap.g__GameMaps__handler took ${(elapsed_ms() -
+            max_ms)}ms longer handling than it should have.`,
+        );
+      } else if (elapsed_ms() < min_ms) {
+        const sleep_ms = (min_ms - elapsed_ms());
+        if (sleep_ms > 0) {
+          await sleep(sleep_ms);
+        }
+      }
+    }
+    // safely close all GameMaps
+  }
 }
