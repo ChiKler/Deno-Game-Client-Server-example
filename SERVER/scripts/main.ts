@@ -67,35 +67,36 @@ async function handle_requests()
     
     
     else
-    if (req.method === `GET` && req.url === `/`)
+    if (req.method === "GET" && req.url === "/")
     {
-      req.respond({ status:200, body: await Deno.open("../../CLIENT/index.html") });
+      const headers : Headers = new Headers(); headers.set("Content-Type", "text/html");
+      req.respond({ status:200, body: await Deno.open("../CLIENT/index.html") });
     }
     
     else
-    if (req.method === `GET` && req.url === `/css/main.css`)
+    if (req.method === "GET" && req.url === "/css/main.css")
     {
       const headers : Headers = new Headers(); headers.set("Content-Type", "text/css");
-      req.respond({ status:200, headers, body: await Deno.open(`../../CLIENT/css/main.css`) });
+      req.respond({ status:200, headers, body: await Deno.open("../CLIENT/css/main.css") });
     }
     
     else
     if (req.method === "GET" && req.url === "/scripts/canvas.js")
     {
       const headers = new Headers(); headers.set("Content-Type", "text/javascript");
-      req.respond({ status:200, headers, body: await Deno.open("../../CLIENT/scripts/Player.js") });
+      req.respond({ status:200, headers, body: await Deno.open("../CLIENT/scripts/Player.js") });
     }
     else
     if (req.method === "GET" && req.url === "/scripts/main.js")
     {
       const headers : Headers = new Headers(); headers.set("Content-Type", "text/javascript");
-      req.respond({ status:200, headers, body: await Deno.open("../../CLIENT/scripts/main.js") });
+      req.respond({ status:200, headers, body: await Deno.open("../CLIENT/scripts/main.js") });
     }
     else
     if (req.method === "GET" && req.url === "/scripts/mod.js")
     {
       const headers : Headers = new Headers(); headers.set("Content-Type", "text/javascript");
-      req.respond({ status:200, headers, body: await Deno.open("../../CLIENT/scripts/mod.js") });
+      req.respond({ status:200, headers, body: await Deno.open("../CLIENT/scripts/mod.js") });
     }
     
     
