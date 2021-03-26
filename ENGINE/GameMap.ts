@@ -17,7 +17,7 @@ export class GameMap {
 
   #isRunning: boolean;
 
-  m__Players: Map<string, Player>;
+  #m__Players: Map<string, Player>;
 
   // @ts-ignore
   m__Players_BufferIn: GameMap.Players_BufferIn;
@@ -29,7 +29,7 @@ export class GameMap {
 
     this.#isRunning = false;
 
-    this.m__Players = new Map<string, Player>();
+    this.#m__Players = new Map<string, Player>();
 
     this.m__Players_BufferIn = new GameMap.Players_BufferIn();
     this.m__Players_BufferOut = new GameMap.Players_BufferOut();
@@ -45,10 +45,8 @@ export class GameMap {
     pass(t: T): number {
       return (this.#data.push(t));
     }
-    take(): T {
-      return (this.#data[this.#data.length - 1]);
-    }
-    read(): void { // take callback, do forEach
+    take(): (T | undefined) {
+      return (this.#data.pop());
     }
   };
   static Players_BufferIn = class extends GameMap.Players_Buffer<Player> {
@@ -90,7 +88,7 @@ export class GameMap {
     while ((found == false) && (i < l__GameMap_IDs.length)) {
       if (
         // @ts-ignore
-        g__GameMaps.get(l__GameMap_IDs[i]).m__Players.get(uuID) == undefined
+        g__GameMaps.get(l__GameMap_IDs[i]).#m__Players.get(uuID) == undefined
       ) {
         i++;
       } else {
@@ -106,7 +104,7 @@ export class GameMap {
       // @ts-ignore
       g__GameMaps.get(p__GameMap_ID).m__Players_BufferOut.pass({
         // @ts-ignore
-        player: this.m__Players.get(uuID).player,
+        player: this.#m__Players.get(uuID).player,
         isToBeDisconnected: true,
         GameMap__target: undefined,
       });
@@ -141,7 +139,16 @@ export class GameMap {
 
     ///
 
-    ///
+    let m__Players_BufferIn__take__ReVa: (Player | undefined);
+    while (
+      (m__Players_BufferIn__take__ReVa = this.m__Players_BufferIn.take()) !=
+        undefined
+    ) {
+      this.#m__Players.set(
+        m__Players_BufferIn__take__ReVa.uuID,
+        m__Players_BufferIn__take__ReVa,
+      );
+    }
 
     if (elapsed_ms() > max_ms) {
       console.warn(
