@@ -55,7 +55,7 @@ export class GameMap {
     T extends {
       player: Player;
       isToBeDisconnected: boolean;
-      GameMap__target: GameMap_ID;
+      GameMap__target: (GameMap_ID | undefined);
     },
   > {
     #data: Array<T>; // should use ArrayBuffer as buffer and Uint8Array as view
@@ -116,7 +116,12 @@ export class GameMap {
       return ({ status: Status.NotFound });
     } else {
       // @ts-ignore
-      this.m__PlayersBufferOut.pass(player);
+      this.m__PlayersBufferOut.pass({
+        // @ts-ignore
+        player: this.m__Players.get(uuID).player,
+        isToBeDisconnected: true,
+        GameMap__target: undefined,
+      });
 
       return ({ status: Status.OK });
     }
