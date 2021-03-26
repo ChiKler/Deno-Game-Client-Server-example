@@ -12,6 +12,49 @@ export enum GameMap_ID {
   Sandbox,
 }
 
+class PlayersBufferIn {
+  #data: Array<Player>; // should use ArrayBuffer as buffer and Uint8Array as view
+
+  constructor() {
+    this.#data = new Array<Player>();
+  }
+
+  pass(player: Player): number {
+    return (this.#data.push(player));
+  }
+  take(): Player {
+    return (this.#data[this.#data.length - 1]);
+  }
+  read(): void { // take callback, do forEach
+  }
+}
+class PlayersBufferOut<
+  T extends {
+    player: Player;
+    isToBeDisconnected: boolean;
+    GameMap__target: (GameMap_ID | undefined);
+  } = {
+    player: Player;
+    isToBeDisconnected: boolean;
+    GameMap__target: (GameMap_ID | undefined);
+  },
+> {
+  #data: Array<T>; // should use ArrayBuffer as buffer and Uint8Array as view
+
+  constructor() {
+    this.#data = new Array<T>();
+  }
+
+  pass(t: T): number {
+    return (this.#data.push(t));
+  }
+  take(): T {
+    return (this.#data[this.#data.length - 1]);
+  }
+  read(): void { // take callback, do forEach
+  }
+}
+
 export class GameMap {
   readonly m__GameMap_ID: GameMap_ID;
 
@@ -19,10 +62,8 @@ export class GameMap {
 
   m__Players: Map<string, Player>;
 
-  // @ts-ignore
-  m__PlayersBufferIn: GameMap.PlayersBufferIn;
-  // @ts-ignore
-  m__PlayersBufferOut: GameMap.PlayersBufferOut;
+  m__PlayersBufferIn: PlayersBufferIn;
+  m__PlayersBufferOut: PlayersBufferOut;
 
   constructor(p__GameMap_ID: GameMap_ID) {
     this.m__GameMap_ID = p__GameMap_ID;
@@ -31,48 +72,9 @@ export class GameMap {
 
     this.m__Players = new Map<string, Player>();
 
-    this.m__PlayersBufferIn = new GameMap.PlayersBufferIn();
-    this.m__PlayersBufferOut = new GameMap.PlayersBufferOut();
+    this.m__PlayersBufferIn = new PlayersBufferIn();
+    this.m__PlayersBufferOut = new PlayersBufferOut();
   }
-
-  static PlayersBufferIn = class {
-    #data: Array<Player>; // should use ArrayBuffer as buffer and Uint8Array as view
-
-    constructor() {
-      this.#data = new Array<Player>();
-    }
-
-    pass(player: Player): number {
-      return (this.#data.push(player));
-    }
-    take(): Player {
-      return (this.#data[this.#data.length - 1]);
-    }
-    read(): void { // take callback, do forEach
-    }
-  };
-  static PlayersBufferOut = class<
-    T extends {
-      player: Player;
-      isToBeDisconnected: boolean;
-      GameMap__target: (GameMap_ID | undefined);
-    },
-  > {
-    #data: Array<T>; // should use ArrayBuffer as buffer and Uint8Array as view
-
-    constructor() {
-      this.#data = new Array<T>();
-    }
-
-    pass(t: T): number {
-      return (this.#data.push(t));
-    }
-    take(): T {
-      return (this.#data[this.#data.length - 1]);
-    }
-    read(): void { // take callback, do forEach
-    }
-  };
 
   static connect_player(
     g__GameMaps: Map<GameMap_ID, GameMap>,
