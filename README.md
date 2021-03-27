@@ -2,7 +2,7 @@
 
 The main purpose of this example is to illustrate a bug there is with the WebSocket object in the standard Deno library (work in progress).
 
-## How to replicate the bug:
+## How to replicate the supposed bug:
 
 1. Connect to https://localhost:3000/
 2. Select any of the names in the prompt and press accept
