@@ -167,14 +167,14 @@ export class GameMap {
 
     // -------- COMENT THIS SECTION TO SOLVE THE SUPPOSED BUG -------- //
 
-    this.#m__Players.forEach((l__Player__i: Player) => {
-      this.#m__Players.forEach((l__Player__j: Player) => {
-        if (l__Player__j.uuID != l__Player__i.uuID) {
-          if (!l__Player__i.ws.isClosed) {
-            ws_msg_send(l__Player__i.ws, {
+    this.#m__Players.forEach((player_i: Player) => {
+      this.#m__Players.forEach((player_j: Player) => {
+        if (player_j.uuID != player_i.uuID) {
+          if (!player_i.ws.isClosed) {
+            ws_msg_send(player_i.ws, {
               kind: "Player_WSMsg",
               id: Player_WSMsg_ID.Sighting,
-              body: { p__Player: l__Player__j },
+              body: { p__Player: player_j },
             });
           }
         }
