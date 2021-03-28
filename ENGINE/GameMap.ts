@@ -170,13 +170,11 @@ export class GameMap {
     this.#m__Players.forEach((player_i: Player) => {
       this.#m__Players.forEach((player_j: Player) => {
         if (player_j.uuID != player_i.uuID) {
-          if (!player_i.ws.isClosed) {
-            WS_msg__send(player_i.ws, {
-              kind: "Player_WSMsg",
-              id: Player_WSMsg_ID.Sighting,
-              body: { p__Player: { uuID: player_j.uuID } },
-            });
-          }
+          WS_msg__send(player_i.ws, {
+            kind: "Player_WSMsg",
+            id: Player_WSMsg_ID.Sighting,
+            body: { p__Player: { uuID: player_j.uuID } },
+          });
         }
       });
     });
@@ -188,23 +186,26 @@ export class GameMap {
       (m__Players_BufferIn__take__ReVa = this.#m__Players_BufferIn.take()) !=
         undefined
     ) {
-      const player = m__Players_BufferIn__take__ReVa;
+      const player_that_arrives = m__Players_BufferIn__take__ReVa;
 
       this.#m__Players.set(
-        player.uuID,
-        player,
+        player_that_arrives.uuID,
+        player_that_arrives,
       );
-      WS_msg__send(player.ws, {
+      WS_msg__send(player_that_arrives.ws, {
         kind: "Player_WSMsg",
         id: Player_WSMsg_ID.Connection,
-        body: { p__Player: player, p__GameMap_ID: this.m__GameMap_ID },
+        body: {
+          p__Player: { uuID: player_that_arrives.uuID },
+          p__GameMap_ID: this.m__GameMap_ID,
+        },
       });
-      this.#m__Players.forEach((l__Player: Player) => {
-        if (l__Player.uuID != player.uuID) {
-          WS_msg__send(l__Player.ws, {
+      this.#m__Players.forEach((player_that_was_already_here: Player) => {
+        if (player_that_was_already_here.uuID != player_that_arrives.uuID) {
+          WS_msg__send(player_that_was_already_here.ws, {
             kind: "Player_WSMsg",
             id: Player_WSMsg_ID.Sighting,
-            body: { p__Player: player },
+            body: { p__Player: { uuID: player_that_arrives.uuID } },
           });
         }
       });
