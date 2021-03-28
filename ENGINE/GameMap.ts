@@ -8,7 +8,7 @@ import { isWebSocketCloseEvent } from "https://deno.land/std@0.91.0/ws/mod.ts";
 
 import { User } from "../SERVER/scripts/User.ts";
 
-import { ws_msg_recv, ws_msg_send } from "../SERVER/scripts/websockets.ts";
+import { WS_msg__recv, WS_msg__send } from "../SERVER/scripts/websockets.ts";
 
 export enum GameMap_ID {
   Sandbox,
@@ -171,7 +171,7 @@ export class GameMap {
       this.#m__Players.forEach((player_j: Player) => {
         if (player_j.uuID != player_i.uuID) {
           if (!player_i.ws.isClosed) {
-            ws_msg_send(player_i.ws, {
+            WS_msg__send(player_i.ws, {
               kind: "Player_WSMsg",
               id: Player_WSMsg_ID.Sighting,
               body: { p__Player: player_j },
@@ -194,14 +194,14 @@ export class GameMap {
         player.uuID,
         player,
       );
-      ws_msg_send(player.ws, {
+      WS_msg__send(player.ws, {
         kind: "Player_WSMsg",
         id: Player_WSMsg_ID.Connection,
         body: { p__Player: player, p__GameMap_ID: this.m__GameMap_ID },
       });
       this.#m__Players.forEach((l__Player: Player) => {
         if (l__Player.uuID != player.uuID) {
-          ws_msg_send(l__Player.ws, {
+          WS_msg__send(l__Player.ws, {
             kind: "Player_WSMsg",
             id: Player_WSMsg_ID.Sighting,
             body: { p__Player: player },
