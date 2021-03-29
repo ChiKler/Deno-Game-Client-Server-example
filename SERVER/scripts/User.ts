@@ -1,5 +1,4 @@
-import { Player } from "../../ENGINE/Player.ts";
-import { GameMap, GameMap_ID } from "../../ENGINE/GameMap.ts";
+import { GameEntity, GameMap, GameMap_ID, Player } from "../../ENGINE/mod.ts";
 
 import { Status } from "https://deno.land/std@0.91.0/http/http_status.ts";
 import { v4 } from "https://deno.land/std@0.91.0/uuid/mod.ts";
@@ -51,17 +50,17 @@ export class User {
       return ({ status: l__GameMap__connect_player__ReVa.status });
     }
   }
-  static connect(
+  static async connect(
     g__GameMaps: Map<GameMap_ID, GameMap>,
     p__GameMap_ID: GameMap_ID,
     g__Users: Map<string, User>,
     uuID: string,
     player_ws__new: WebSocket,
-  ): {
+  ): Promise<{
     status: Status;
     wasUserAlreadyConnected: boolean;
     player_ws__old: (WebSocket | undefined);
-  } {
+  }> {
     const ssID = v4.generate();
 
     // @ts-ignore
@@ -79,7 +78,11 @@ export class User {
       player.ws = player_ws__new;
     } else {
       player_ws__old = undefined;
-      player = new Player(uuID, player_ws__new);
+      player = new Player(
+        await GameEntity.eeID_generate(1),
+        uuID,
+        player_ws__new,
+      );
     }
 
     g__Users.set(uuID, new User(uuID, ssID, player));

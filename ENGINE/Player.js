@@ -8,11 +8,11 @@ export var WS_msg_Player_ID;
   WS_msg_Player_ID[WS_msg_Player_ID["Takedown"] = 3] = "Takedown";
 })(WS_msg_Player_ID || (WS_msg_Player_ID = {}));
 
-export class Player extends GameEntity{
+export class Player extends GameEntity {
   uuID;
 
-  constructor(uuID) {
-    super();
+  constructor(eeID, uuID) {
+    super(eeID);
     this.uuID = uuID;
   }
 }

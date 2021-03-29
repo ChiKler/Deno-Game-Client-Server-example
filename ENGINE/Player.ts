@@ -14,8 +14,8 @@ export class Player extends GameEntity {
 
   ws: WebSocket;
 
-  constructor(uuID: string, ws: WebSocket) {
-    super();
+  constructor(eeID: number, uuID: string, ws: WebSocket) {
+    super(eeID);
     this.uuID = uuID;
 
     this.ws = ws;

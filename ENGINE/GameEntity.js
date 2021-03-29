@@ -1,1 +1,6 @@
-export class GameEntity {};
+export class GameEntity {
+  eeID;
+  constructor(eeID) {
+    this.eeID = eeID;
+  }
+}

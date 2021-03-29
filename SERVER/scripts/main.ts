@@ -22,8 +22,11 @@ const g__server = serve({ port: 3000 });
 const g__server__isRunning = true;
 
 async function handle_requests() {
-  const handle_user_connection = (uuID: string, player_ws__new: WebSocket) => {
-    const l__User__connect__ReVa = User.connect(
+  const handle_user_connection = async (
+    uuID: string,
+    player_ws__new: WebSocket,
+  ) => {
+    const l__User__connect__ReVa = await User.connect(
       g__GameMaps,
       GameMap_ID.Sandbox,
       g__Users,
@@ -131,13 +134,13 @@ async function handle_requests() {
         headers,
         body: await Deno.open("../CLIENT/scripts/websockets.js"),
       });
-    } else if (req.method === "GET" && req.url === "/ENGINE/Player.js") {
+    } else if (req.method === "GET" && req.url === "/ENGINE/GameEntity.js") {
       const headers = new Headers();
       headers.set("Content-Type", "text/javascript");
       req.respond({
         status: 200,
         headers,
-        body: await Deno.open("../ENGINE/Player.js"),
+        body: await Deno.open("../ENGINE/GameEntity.js"),
       });
     } else if (req.method === "GET" && req.url === "/ENGINE/GameMap.js") {
       const headers: Headers = new Headers();
@@ -146,6 +149,14 @@ async function handle_requests() {
         status: 200,
         headers,
         body: await Deno.open("../ENGINE/GameMap.js"),
+      });
+    } else if (req.method === "GET" && req.url === "/ENGINE/Player.js") {
+      const headers = new Headers();
+      headers.set("Content-Type", "text/javascript");
+      req.respond({
+        status: 200,
+        headers,
+        body: await Deno.open("../ENGINE/Player.js"),
       });
     } else if (req.method === "GET" && req.url === "/ENGINE/mod.js") {
       const headers = new Headers();
