@@ -1,18 +1,21 @@
+import { GameEntity } from "./GameEntity.ts";
+
 import { WebSocket } from "https://deno.land/std@0.91.0/ws/mod.ts";
 
-export enum Player_WSMsg_ID {
+export enum WS_msg_Player_ID {
   Connection,
   Sighting,
   Vanishing,
   Takedown,
 }
 
-export class Player {
+export class Player extends GameEntity {
   readonly uuID: string;
 
   ws: WebSocket;
 
   constructor(uuID: string, ws: WebSocket) {
+    super();
     this.uuID = uuID;
 
     this.ws = ws;

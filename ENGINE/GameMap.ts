@@ -1,4 +1,4 @@
-import { Player, Player_WSMsg_ID } from "./Player.ts";
+import { Player, WS_msg_Player_ID } from "./Player.ts";
 
 import { time_stamp } from "../vendor/utility/time_stamp.ts";
 import { sleep } from "../vendor/utility/sleep.ts";
@@ -171,8 +171,8 @@ export class GameMap {
       this.#m__Players.forEach((player_j: Player) => {
         if (player_j.uuID != player_i.uuID) {
           WS_msg__send(player_i.ws, {
-            kind: "Player_WSMsg",
-            id: Player_WSMsg_ID.Sighting,
+            kind: "WS_msg_Player",
+            id: WS_msg_Player_ID.Sighting,
             body: { p__Player: { uuID: player_j.uuID } },
           });
         }
@@ -191,8 +191,8 @@ export class GameMap {
         player_that_arrives,
       );
       WS_msg__send(player_that_arrives.ws, {
-        kind: "Player_WSMsg",
-        id: Player_WSMsg_ID.Connection,
+        kind: "WS_msg_Player",
+        id: WS_msg_Player_ID.Connection,
         body: {
           p__Player: { uuID: player_that_arrives.uuID },
           p__GameMap_ID: this.m__GameMap_ID,
@@ -201,8 +201,8 @@ export class GameMap {
       this.#m__Players.forEach((player_that_was_already_here: Player) => {
         if (player_that_was_already_here.uuID != player_that_arrives.uuID) {
           WS_msg__send(player_that_was_already_here.ws, {
-            kind: "Player_WSMsg",
-            id: Player_WSMsg_ID.Sighting,
+            kind: "WS_msg_Player",
+            id: WS_msg_Player_ID.Sighting,
             body: { p__Player: { uuID: player_that_arrives.uuID } },
           });
         }
