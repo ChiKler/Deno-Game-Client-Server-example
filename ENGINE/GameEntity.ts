@@ -10,7 +10,7 @@ export abstract class GameEntity {
   private static eeID_mutex = new Mutex();
   static async eeID_generate(amount: number): Promise<number> {
     const eeID_mutex__unlock = await GameEntity.eeID_mutex.lock();
-    let eeID_count__old = GameEntity.eeID_count;
+    const eeID_count__old = GameEntity.eeID_count;
     GameEntity.eeID_count += amount;
     eeID_mutex__unlock();
     return (eeID_count__old);
