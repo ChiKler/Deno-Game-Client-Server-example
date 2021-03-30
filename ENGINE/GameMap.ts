@@ -26,7 +26,7 @@ export class GameMap {
   // @ts-ignore
   #m__Players_BufferOut: GameMap.Players_BufferOut;
 
-  constructor(p__GameMap_ID: GameMap_ID) {
+  private constructor(p__GameMap_ID: GameMap_ID) {
     this.m__GameMap_ID = p__GameMap_ID;
 
     this.#isRunning = false;
@@ -35,6 +35,44 @@ export class GameMap {
 
     this.#m__Players_BufferIn = new GameMap.Players_BufferIn();
     this.#m__Players_BufferOut = new GameMap.Players_BufferOut();
+  }
+  static async open(
+    g__GameMaps: Map<GameMap_ID, GameMap>,
+    p__GameMap_ID: GameMap_ID,
+  ): Promise<void> {
+    const l__GameMap_IDs = [...g__GameMaps.keys()];
+
+    let found = false;
+    let i = 0;
+
+    while ((found == false) && (i < l__GameMap_IDs.length)) {
+      if (l__GameMap_IDs[i] == p__GameMap_ID) {
+        found = true;
+        break;
+      } else {
+        i++;
+      }
+    }
+
+    if (found == true) {
+      try {
+        throw new TypeError(
+          `Invalid GameMap.open() argument { p__GameMap_ID: ${p__GameMap_ID} } ~ Only one GameMap with the same GameMap_ID can exist at the same time.`,
+        );
+      } catch (err) {
+        console.error(err);
+      }
+    } else {
+      g__GameMaps.set(p__GameMap_ID, new GameMap(p__GameMap_ID));
+    }
+  }
+  static async close(
+    g__GameMaps: Map<GameMap_ID, GameMap>,
+    p__GameMap_ID: GameMap_ID,
+  ): Promise<void> {
+    await g__GameMaps.get(p__GameMap_ID)!.#stop();
+
+    while (true) {}// wait for all the players at g__GameMaps.get(p__GameMap_ID).#m__Players_BufferOut to be disconnected // e.g. a player may still be waiting to receive rewards from an npc they had aggroed
   }
 
   static Players_Buffer = class<T> {
@@ -218,7 +256,7 @@ export class GameMap {
       }
     }
   };
-  run = async (): Promise<void> => {
+  #run = async (): Promise<void> => {
     if (this.#isRunning) {
       return;
     } else {
@@ -229,10 +267,12 @@ export class GameMap {
       await this.#update();
     }
   };
-  stop = (): void => {
+  #stop = async (): Promise<void> => {
     if (!this.#isRunning) {
       return;
     } else {
+      while (true) {}// wait for all the players to be safely moved into this.#m__Players_BufferOut // e.g. a player is still in combat
+
       this.#isRunning = false;
     }
   };
@@ -298,11 +338,13 @@ export class GameMap {
       }
     };
 
-    g__GameMaps.set(GameMap_ID.Sandbox, new GameMap(GameMap_ID.Sandbox));
+    await Promise.all([
+      GameMap.open(g__GameMaps, GameMap_ID.Sandbox),
+    ]);
 
     await Promise.all([
       handler_loop(),
-      g__GameMaps.get(GameMap_ID.Sandbox)!.run(),
+      g__GameMaps.get(GameMap_ID.Sandbox)!.#run(),
     ]);
 
     // safely close all GameMaps
