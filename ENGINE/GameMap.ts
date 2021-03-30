@@ -36,7 +36,7 @@ export class GameMap {
     this.#m__Players_BufferIn = new GameMap.Players_BufferIn();
     this.#m__Players_BufferOut = new GameMap.Players_BufferOut();
   }
-  static async open(
+  private static async open(
     g__GameMaps: Map<GameMap_ID, GameMap>,
     p__GameMap_ID: GameMap_ID,
   ): Promise<void> {
@@ -66,13 +66,17 @@ export class GameMap {
       g__GameMaps.set(p__GameMap_ID, new GameMap(p__GameMap_ID));
     }
   }
-  static async close(
+  private static async close(
     g__GameMaps: Map<GameMap_ID, GameMap>,
     p__GameMap_ID: GameMap_ID,
   ): Promise<void> {
-    await g__GameMaps.get(p__GameMap_ID)!.#stop();
+    if (g__GameMaps.get(p__GameMap_ID) == undefined) return;
+    const l__GameMap = g__GameMaps.get(p__GameMap_ID)!;
+    if (l__GameMap.#isRunning) {
+      await l__GameMap.#update__stop();
+    }
 
-    while (true) {}// wait for all the players at g__GameMaps.get(p__GameMap_ID).#m__Players_BufferOut to be disconnected // e.g. a player may still be waiting to receive rewards from an npc they had aggroed
+    while (true) {} // wait for all the players at g__GameMaps.get(p__GameMap_ID).#m__Players_BufferOut to be disconnected // e.g. a player may still be waiting to receive rewards from an npc they had aggroed
   }
 
   static Players_Buffer = class<T> {
@@ -256,7 +260,7 @@ export class GameMap {
       }
     }
   };
-  #run = async (): Promise<void> => {
+  #update__start = async (): Promise<void> => {
     if (this.#isRunning) {
       return;
     } else {
@@ -267,11 +271,11 @@ export class GameMap {
       await this.#update();
     }
   };
-  #stop = async (): Promise<void> => {
+  #update__stop = async (): Promise<void> => {
     if (!this.#isRunning) {
       return;
     } else {
-      while (true) {}// wait for all the players to be safely moved into this.#m__Players_BufferOut // e.g. a player is still in combat
+      while (true) {} // wait for all the players to be safely moved into this.#m__Players_BufferOut // e.g. a player is still in combat
 
       this.#isRunning = false;
     }
@@ -344,7 +348,7 @@ export class GameMap {
 
     await Promise.all([
       handler_loop(),
-      g__GameMaps.get(GameMap_ID.Sandbox)!.#run(),
+      g__GameMaps.get(GameMap_ID.Sandbox)!.#update__start(),
     ]);
 
     // safely close all GameMaps
