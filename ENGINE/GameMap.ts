@@ -241,60 +241,70 @@ export class GameMap {
     g__GameMaps: Map<GameMap_ID, GameMap>,
     g__server__isRunning: boolean,
   ): Promise<void> {
-    g__GameMaps.set(GameMap_ID.Sandbox, new GameMap(GameMap_ID.Sandbox));
+    const handler_loop = async (): Promise<void> => {
+      while (g__server__isRunning) {
+        const begin_ms = time_stamp();
+        const min_ms = 20;
+        const max_ms = 40;
 
-    while (g__server__isRunning) {
-      const begin_ms = time_stamp();
-      const min_ms = 20;
-      const max_ms = 40;
+        const elapsed_ms = (): number => {
+          return (time_stamp() - begin_ms);
+        };
 
-      const elapsed_ms = (): number => {
-        return (time_stamp() - begin_ms);
-      };
-
-      g__GameMaps.forEach((l__GameMap: GameMap) => {
-        let l__GameMap__Players_BufferOut__take__ReVa:
-          // @ts-ignore
-          (GameMap.Players_BufferOut__data__Ty | undefined);
-        while (
-          (l__GameMap__Players_BufferOut__take__ReVa = l__GameMap
-            .#m__Players_BufferOut.take()) !=
-            undefined
-        ) {
-          if (l__GameMap__Players_BufferOut__take__ReVa.m__isToBeDisconnected) {
-            console.log(
-              `The Player with eeID ${l__GameMap__Players_BufferOut__take__ReVa.m__Player.eeID} is to be disconnected from g__GameMaps. This option needs to be implemented.`,
-            );
-          } else {
+        g__GameMaps.forEach((l__GameMap: GameMap) => {
+          let l__GameMap__Players_BufferOut__take__ReVa:
+            // @ts-ignore
+            (GameMap.Players_BufferOut__data__Ty | undefined);
+          while (
+            (l__GameMap__Players_BufferOut__take__ReVa = l__GameMap
+              .#m__Players_BufferOut.take()) !=
+              undefined
+          ) {
             if (
-              g__GameMaps.get(
-                l__GameMap__Players_BufferOut__take__ReVa
-                  .m__GameMap_ID__target!,
-              )! != undefined
+              l__GameMap__Players_BufferOut__take__ReVa.m__isToBeDisconnected
             ) {
-              g__GameMaps.get(
-                l__GameMap__Players_BufferOut__take__ReVa
-                  .m__GameMap_ID__target!,
-              )!.#m__Players_BufferIn.pass(
-                l__GameMap__Players_BufferOut__take__ReVa.m__Player,
+              console.log(
+                `The Player with eeID ${l__GameMap__Players_BufferOut__take__ReVa.m__Player.eeID} is to be disconnected from g__GameMaps. This option needs to be implemented.`,
               );
+            } else {
+              if (
+                g__GameMaps.get(
+                  l__GameMap__Players_BufferOut__take__ReVa
+                    .m__GameMap_ID__target!,
+                )! != undefined
+              ) {
+                g__GameMaps.get(
+                  l__GameMap__Players_BufferOut__take__ReVa
+                    .m__GameMap_ID__target!,
+                )!.#m__Players_BufferIn.pass(
+                  l__GameMap__Players_BufferOut__take__ReVa.m__Player,
+                );
+              }
             }
           }
-        }
-      });
+        });
 
-      if (elapsed_ms() > max_ms) {
-        console.warn(
-          `GameMap.g__GameMaps__handler took ${(elapsed_ms() -
-            max_ms)}ms longer handling than it should have.`,
-        );
-      } else if (elapsed_ms() < min_ms) {
-        const sleep_ms = (min_ms - elapsed_ms());
-        if (sleep_ms > 0) {
-          await sleep(sleep_ms);
+        if (elapsed_ms() > max_ms) {
+          console.warn(
+            `GameMap.g__GameMaps__handler took ${(elapsed_ms() -
+              max_ms)}ms longer handling than it should have.`,
+          );
+        } else if (elapsed_ms() < min_ms) {
+          const sleep_ms = (min_ms - elapsed_ms());
+          if (sleep_ms > 0) {
+            await sleep(sleep_ms);
+          }
         }
       }
-    }
+    };
+
+    g__GameMaps.set(GameMap_ID.Sandbox, new GameMap(GameMap_ID.Sandbox));
+
+    await Promise.all([
+      handler_loop(),
+      g__GameMaps.get(GameMap_ID.Sandbox)!.run(),
+    ]);
+
     // safely close all GameMaps
   }
 }

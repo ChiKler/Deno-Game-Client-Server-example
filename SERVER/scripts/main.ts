@@ -149,6 +149,4 @@ async function g__server__handle_requests() {
 await Promise.all([
   g__server__handle_requests(),
   GameMap.g__GameMaps__handler(g__GameMaps, g__server__isRunning),
-  // @ts-ignore
-  g__GameMaps.get(GameMap_ID.Sandbox).run(),
 ]);
