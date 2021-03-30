@@ -96,8 +96,7 @@ export class GameMap {
     if (g__GameMaps.get(p__GameMap_ID) == undefined) {
       return ({ status: Status.NotFound });
     } else {
-      // @ts-ignore
-      g__GameMaps.get(p__GameMap_ID).#m__Players_BufferIn.pass(player);
+      g__GameMaps.get(p__GameMap_ID)!.#m__Players_BufferIn.pass(player);
 
       return ({ status: Status.OK });
     }
@@ -115,8 +114,7 @@ export class GameMap {
 
     while ((found == false) && (i < l__GameMap_IDs.length)) {
       if (
-        // @ts-ignore
-        g__GameMaps.get(l__GameMap_IDs[i]).#m__Players_Map.get(eeID) ==
+        g__GameMaps.get(l__GameMap_IDs[i])!.#m__Players_Map.get(eeID) ==
           undefined
       ) {
         i++;
@@ -130,11 +128,9 @@ export class GameMap {
     if (found == false) {
       return ({ status: Status.NotFound });
     } else {
-      // @ts-ignore
-      g__GameMaps.get(l__GameMap_ID).#m__Players_BufferOut.pass(
+      g__GameMaps.get(l__GameMap_ID!)!.#m__Players_BufferOut.pass(
         new GameMap.Players_BufferOut__data__Ty(
-          // @ts-ignore
-          g__GameMaps.get(l__GameMap_ID).#m__Players_Map.get(eeID).player,
+          g__GameMaps.get(l__GameMap_ID!)!.#m__Players_Map.get(eeID)!,
           true,
           undefined,
         ),
@@ -272,15 +268,14 @@ export class GameMap {
           } else {
             if (
               g__GameMaps.get(
-                // @ts-ignore
-                l__GameMap__Players_BufferOut__take__ReVa.m__GameMap_ID__target,
-              ) != undefined
+                l__GameMap__Players_BufferOut__take__ReVa
+                  .m__GameMap_ID__target!,
+              )! != undefined
             ) {
-              // @ts-ignore
               g__GameMaps.get(
-                // @ts-ignore
-                l__GameMap__Players_BufferOut__take__ReVa.m__GameMap_ID__target,
-              ).#m__Players_BufferIn.pass(
+                l__GameMap__Players_BufferOut__take__ReVa
+                  .m__GameMap_ID__target!,
+              )!.#m__Players_BufferIn.pass(
                 l__GameMap__Players_BufferOut__take__ReVa.m__Player,
               );
             }

@@ -63,17 +63,16 @@ export class User {
   }> {
     const ssID = v4.generate();
 
-    // @ts-ignore
     const wasUserAlreadyConnected =
-      ((g__Users.get(uuID) == undefined) ? false : // @ts-ignore
-        g__Users.get(uuID).#isConnected);
+      ((g__Users.get(uuID) == undefined)
+        ? false
+        : g__Users.get(uuID)!.#isConnected);
 
     let player: Player;
     let player_ws__old: (WebSocket | undefined);
 
     if (wasUserAlreadyConnected) {
-      // @ts-ignore
-      player = g__Users.get(uuID).player;
+      player = g__Users.get(uuID)!.player;
       player_ws__old = player.ws;
       player.ws = player_ws__new;
     } else {
@@ -94,8 +93,7 @@ export class User {
       wasUserAlreadyConnected,
     );
 
-    // @ts-ignore
-    g__Users.get(uuID).#isConnected = true;
+    g__Users.get(uuID)!.#isConnected = true;
 
     return ({
       status: l__User__connect_player__ReVa.status,
@@ -109,16 +107,15 @@ export class User {
     g__Users: Map<string, User>,
     uuID: string,
   ): { status: Status } {
+    const user = g__Users.get(uuID)!;
+
     const l__GameMap__disconnect_player__ReVa = GameMap.disconnect_player(
       g__GameMaps,
-      // @ts-ignore
-      g__Users.get(uuID).player.eeID,
+      user.player.eeID,
     );
 
     if (l__GameMap__disconnect_player__ReVa.status == Status.OK) {
       g__Users.delete(uuID);
-      // @ts-ignore
-      g__Users.get(uuID).#isConnected = false;
     }
 
     return ({ status: l__GameMap__disconnect_player__ReVa.status });
@@ -128,10 +125,11 @@ export class User {
     g__Users: Map<string, User>,
     uuID: string,
   ) {
-    if (g__Users.get(uuID) == undefined) {
+    const user = g__Users.get(uuID)!;
+
+    if (user == undefined) {
       return ({ status: Status.NotFound });
-    } // @ts-ignore
-    else if (g__Users.get(uuID).#isConnected) {
+    } else if (user.#isConnected) {
       const l__User__disconnect_player__ReVa = User.disconnect_player(
         g__GameMaps,
         g__Users,

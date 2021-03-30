@@ -23,20 +23,29 @@ const g__server__isRunning = true;
 
 async function g__server__handle_requests() {
   const handle_user_connection = async (
+    req: ServerRequest,
     uuID: string,
-    player_ws__new: WebSocket,
   ) => {
-    const l__User__connect__ReVa = await User.connect(
-      g__GameMaps,
-      GameMap_ID.Sandbox,
-      g__Users,
-      uuID,
-      player_ws__new,
-    );
+    if (acceptable(req)) {
+      const player_ws__new = await acceptWebSocket({
+        conn: req.conn,
+        bufReader: req.r,
+        bufWriter: req.w,
+        headers: req.headers,
+      });
 
-    console.log(
-      `Connection attempt: {\n  uuID: ${uuID},\n  l__User__connect__ReVa: {\n    status: ${l__User__connect__ReVa.status}\n    wasUserAlreadyConnected: ${l__User__connect__ReVa.wasUserAlreadyConnected}\n    player_ws__old: ${l__User__connect__ReVa.player_ws__old}\n  }\n}`,
-    );
+      const l__User__connect__ReVa = await User.connect(
+        g__GameMaps,
+        GameMap_ID.Sandbox,
+        g__Users,
+        uuID,
+        player_ws__new,
+      );
+
+      console.log(
+        `Connection attempt: {\n  uuID: ${uuID},\n  l__User__connect__ReVa: {\n    status: ${l__User__connect__ReVa.status}\n    wasUserAlreadyConnected: ${l__User__connect__ReVa.wasUserAlreadyConnected}\n    player_ws__old: ${l__User__connect__ReVa.player_ws__old}\n  }\n}`,
+      );
+    }
   };
 
   const handle_get_file_request = async (
@@ -57,41 +66,11 @@ async function g__server__handle_requests() {
     if (!g__server__isRunning) break;
 
     if (req.url === "/ws?uuID=Jane") {
-      if (acceptable(req)) {
-        handle_user_connection(
-          "Jane",
-          await acceptWebSocket({
-            conn: req.conn,
-            bufReader: req.r,
-            bufWriter: req.w,
-            headers: req.headers,
-          }),
-        );
-      }
+      handle_user_connection(req, "Jane");
     } else if (req.url === "/ws?uuID=John") {
-      if (acceptable(req)) {
-        handle_user_connection(
-          "John",
-          await acceptWebSocket({
-            conn: req.conn,
-            bufReader: req.r,
-            bufWriter: req.w,
-            headers: req.headers,
-          }),
-        );
-      }
+      handle_user_connection(req, "John");
     } else if (req.url === "/ws?uuID=Mary") {
-      if (acceptable(req)) {
-        handle_user_connection(
-          "Mary",
-          await acceptWebSocket({
-            conn: req.conn,
-            bufReader: req.r,
-            bufWriter: req.w,
-            headers: req.headers,
-          }),
-        );
-      }
+      handle_user_connection(req, "Mary");
     } else if (req.method === "GET" && req.url === "/") {
       handle_get_file_request(
         req,
