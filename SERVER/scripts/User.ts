@@ -6,13 +6,13 @@ import { WebSocket } from "https://deno.land/std@0.91.0/ws/mod.ts";
 
 export class User {
   readonly uuID: string;
-  ssID: string;
+  readonly ssID: string;
 
-  player: Player;
+  readonly player: Player;
 
   #isConnected: boolean;
 
-  constructor(uuID: string, ssID: string, player: Player) {
+  private constructor(uuID: string, ssID: string, player: Player) {
     this.uuID = uuID;
     this.ssID = ssID;
 
