@@ -13,15 +13,20 @@ function init() {
 
   ws_msg_recv(
     g__ws_game,
-    "Player_WSMsg",
+    "WS_msg_Player",
     WS_msg_Player_ID.Connection,
     (body) => {
       // ...
     },
   );
-  ws_msg_recv(g__ws_game, "Player_WSMsg", WS_msg_Player_ID.Sighting, (body) => {
-    // ...
-  });
+  ws_msg_recv(
+    g__ws_game,
+    "WS_msg_Player",
+    WS_msg_Player_ID.Sighting,
+    (body) => {
+      // ...
+    },
+  );
 }
 
 window.onload = init();
