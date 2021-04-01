@@ -1,26 +1,37 @@
 import { Player, WS_msg_Player_ID } from "../../ENGINE/mod.js";
 
-import { g__ws_game, g__ws_game__set } from "./main.js";
+import {
+  g__connect_player,
+  g__connect_user,
+  g__uuID,
+  g__ws_player,
+} from "./main.js";
 
 import { g__canvas__set } from "./canvas.js";
 
-import { ws_msg_recv } from "./websockets.js";
+import { WS_msg__recv } from "./websockets.js";
 
-function init() {
+import { sleep } from "../../vendor/utility/mod.js";
+
+async function init() {
   g__canvas__set();
+  while ((await g__connect_user()).status != 200) {
+    await sleep(1000);
+  }
+  while ((await g__connect_player()).status != 200) {
+    await sleep(1000);
+  }
 
-  g__ws_game__set();
-
-  ws_msg_recv(
-    g__ws_game,
+  WS_msg__recv(
+    g__ws_player,
     "WS_msg_Player",
     WS_msg_Player_ID.Connection,
     (body) => {
       // ...
     },
   );
-  ws_msg_recv(
-    g__ws_game,
+  WS_msg__recv(
+    g__ws_player,
     "WS_msg_Player",
     WS_msg_Player_ID.Sighting,
     (body) => {

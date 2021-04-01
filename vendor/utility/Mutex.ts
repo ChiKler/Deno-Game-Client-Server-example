@@ -10,7 +10,7 @@ export class Mutex {
 
   constructor() {}
 
-  public lock(): Promise<() => void> {
+  public async lock(): Promise<() => void> {
     let _resolve: () => void;
     const promise = new Promise<void>((resolve) => {
       _resolve = () => resolve(void 0);

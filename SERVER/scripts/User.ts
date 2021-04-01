@@ -8,58 +8,90 @@ export class User {
   readonly uuID: string;
   readonly ssID: string;
 
-  readonly player: Player;
+  #ws_player?: WebSocket;
+  //#ws_chat? : WebSocket;
+
+  #player?: Player;
 
   #isConnected: boolean;
 
-  private constructor(uuID: string, ssID: string, player: Player) {
+  private constructor(uuID: string, ssID: string, player?: Player) {
     this.uuID = uuID;
     this.ssID = ssID;
 
-    this.player = player;
+    this.#ws_player = undefined;
+    //this.#ws_chat = undefined;
+
+    this.#player = player;
 
     this.#isConnected = false;
   }
 
-  static connect_player(
+  set ws_player(ws_player: WebSocket) {
+    this.#ws_player = ws_player;
+  }
+
+  static async connect_player(
     g__GameMaps: Map<GameMap_ID, GameMap>,
     p__GameMap_ID: GameMap_ID,
     g__Users: Map<string, User>,
     uuID: string,
-    wasUserAlreadyConnected: boolean,
-  ): { status: Status } {
-    if (wasUserAlreadyConnected) {
-      return ({ status: Status.OK });
+  ): Promise<{ status: Status; status_message: string }> {
+    const user = g__Users.get(uuID)!;
+    if (!user.#isConnected) {
+      return ({
+        status: Status.Conflict,
+        status_message: `The User with uuID ${uuID} wasn't connected.`,
+      });
+    } else if (user.#ws_player == undefined) {
+      return ({
+        status: Status.Conflict,
+        status_message:
+          `The User with uuID ${uuID} doesn't have a WebSocket for their Player.`,
+      });
     } else {
-      // @ts-ignore
-      const l__GameMap__connect_player__ReVa = GameMap.connect_player(
-        g__GameMaps,
-        p__GameMap_ID,
-        // @ts-ignore
-        g__Users.get(uuID).player,
-      );
-
-      if (l__GameMap__connect_player__ReVa.status == Status.OK) {
-        // @ts-ignore
-        g__GameMaps.get(GameMap_ID.Sandbox).handle_socket_messages(
-          // @ts-ignore
-          g__Users.get(uuID),
+      if (user.#player == undefined) {
+        user.#player = new Player(
+          await GameEntity.eeID_generate(1),
+          user.#ws_player!,
         );
-      }
 
-      return ({ status: l__GameMap__connect_player__ReVa.status });
+        const l__GameMap__connect_player__ReVa = GameMap.connect_player(
+          g__GameMaps,
+          p__GameMap_ID,
+          user.#player,
+        );
+
+        if (l__GameMap__connect_player__ReVa.status == Status.OK) {
+          g__GameMaps.get(GameMap_ID.Sandbox)!.handle_socket_messages(
+            user.#player,
+          );
+        }
+
+        return ({
+          status: l__GameMap__connect_player__ReVa.status,
+          status_message: l__GameMap__connect_player__ReVa.status_message,
+        });
+      } else {
+        g__GameMaps.get(GameMap_ID.Sandbox)!.handle_socket_messages(
+          user.#player,
+        );
+
+        return ({
+          status: Status.OK,
+          status_message:
+            `The User with uuID ${uuID} already had their Player connected.`,
+        });
+      }
     }
   }
-  static async connect(
-    g__GameMaps: Map<GameMap_ID, GameMap>,
-    p__GameMap_ID: GameMap_ID,
+  static async connect_user(
     g__Users: Map<string, User>,
     uuID: string,
-    player_ws__new: WebSocket,
   ): Promise<{
     status: Status;
+    status_message: string;
     wasUserAlreadyConnected: boolean;
-    player_ws__old: (WebSocket | undefined);
   }> {
     const ssID = v4.generate();
 
@@ -68,77 +100,82 @@ export class User {
         ? false
         : g__Users.get(uuID)!.#isConnected);
 
-    let player: Player;
-    let player_ws__old: (WebSocket | undefined);
+    let player: (Player | undefined);
 
     if (wasUserAlreadyConnected) {
-      player = g__Users.get(uuID)!.player;
-      player_ws__old = player.ws;
-      player.ws = player_ws__new;
+      player = g__Users.get(uuID)!.#player!;
     } else {
-      player_ws__old = undefined;
-      player = new Player(
-        await GameEntity.eeID_generate(1),
-        player_ws__new,
-      );
+      player = undefined;
     }
 
     g__Users.set(uuID, new User(uuID, ssID, player));
 
-    const l__User__connect_player__ReVa = User.connect_player(
-      g__GameMaps,
-      p__GameMap_ID,
-      g__Users,
-      uuID,
-      wasUserAlreadyConnected,
-    );
-
     g__Users.get(uuID)!.#isConnected = true;
 
     return ({
-      status: l__User__connect_player__ReVa.status,
+      status: Status.OK,
+      status_message: `The User with uuID ${uuID} has been connected.`,
       wasUserAlreadyConnected,
-      player_ws__old,
     });
   }
 
-  static disconnect_player(
+  static async disconnect_player(
     g__GameMaps: Map<GameMap_ID, GameMap>,
     g__Users: Map<string, User>,
     uuID: string,
-  ): { status: Status } {
+  ): Promise<{ status: Status; status_message: string }> {
     const user = g__Users.get(uuID)!;
 
-    const l__GameMap__disconnect_player__ReVa = GameMap.disconnect_player(
+    if (user.#player == undefined) {
+      return ({
+        status: Status.Conflict,
+        status_message:
+          `The Player of the User with uuID ${uuID} wasn't connected.`,
+      });
+    }
+
+    const l__GameMap__disconnect_player__ReVa = await GameMap.disconnect_player(
       g__GameMaps,
-      user.player.eeID,
+      user.#player!.eeID,
     );
 
     if (l__GameMap__disconnect_player__ReVa.status == Status.OK) {
       g__Users.delete(uuID);
     }
 
-    return ({ status: l__GameMap__disconnect_player__ReVa.status });
+    return ({
+      status: l__GameMap__disconnect_player__ReVa.status,
+      status_message: l__GameMap__disconnect_player__ReVa.status_message,
+    });
   }
-  static disconnect(
+  static async disconnect_user(
     g__GameMaps: Map<GameMap_ID, GameMap>,
     g__Users: Map<string, User>,
     uuID: string,
-  ) {
+  ): Promise<{ status: Status; status_message: string }> {
     const user = g__Users.get(uuID)!;
 
     if (user == undefined) {
-      return ({ status: Status.NotFound });
+      return ({
+        status: Status.NotFound,
+        status_message: `The User with uuID ${uuID} wasn't connected.`,
+      });
     } else if (user.#isConnected) {
-      const l__User__disconnect_player__ReVa = User.disconnect_player(
+      const l__User__disconnect_player__ReVa = await User.disconnect_player(
         g__GameMaps,
         g__Users,
         uuID,
       );
 
-      return ({ status: l__User__disconnect_player__ReVa.status });
+      return ({
+        status: l__User__disconnect_player__ReVa.status,
+        status_message: l__User__disconnect_player__ReVa.status_message,
+      });
     } else {
-      return ({ status: Status.Conflict });
+      return ({
+        status: Status.Conflict,
+        status_message: `The User with uuID ${uuID} wasn't connected.`,
+      });
     }
   }
 }

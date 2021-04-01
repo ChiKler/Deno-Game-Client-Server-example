@@ -22,30 +22,64 @@ const g__server = serve({ port: 3000 });
 const g__server__isRunning = true;
 
 async function g__server__handle_requests() {
-  const handle_user_connection = async (
+  const handle_req__connect_user = async (
+    req: ServerRequest,
+    uuID: string,
+  ) => {
+    const l__User__connect_user__ReVa = await User.connect_user(
+      g__Users,
+      uuID,
+    );
+
+    console.info(
+      `Connection attempt: {\n  uuID: ${uuID},\n  l__User__connect_user__ReVa: {\n    status: ${l__User__connect_user__ReVa.status}\n    status_message: ${l__User__connect_user__ReVa.status_message}\n    wasUserAlreadyConnected: ${l__User__connect_user__ReVa.wasUserAlreadyConnected}\n  }\n}`,
+    );
+
+    req.respond({
+      status: l__User__connect_user__ReVa.status,
+      body: JSON.stringify({
+        status_message: l__User__connect_user__ReVa.status_message,
+      }),
+    });
+  };
+  const handle_req__ws_player__set = async (
     req: ServerRequest,
     uuID: string,
   ) => {
     if (acceptable(req)) {
-      const player_ws__new = await acceptWebSocket({
+      const ws_player__new = await acceptWebSocket({
         conn: req.conn,
         bufReader: req.r,
         bufWriter: req.w,
         headers: req.headers,
       });
 
-      const l__User__connect__ReVa = await User.connect(
-        g__GameMaps,
-        GameMap_ID.Sandbox,
-        g__Users,
-        uuID,
-        player_ws__new,
-      );
-
-      console.log(
-        `Connection attempt: {\n  uuID: ${uuID},\n  l__User__connect__ReVa: {\n    status: ${l__User__connect__ReVa.status}\n    wasUserAlreadyConnected: ${l__User__connect__ReVa.wasUserAlreadyConnected}\n    player_ws__old: ${l__User__connect__ReVa.player_ws__old}\n  }\n}`,
-      );
+      if (g__Users.get(uuID) != undefined) {
+        g__Users.get(uuID)!.ws_player = ws_player__new;
+      }
     }
+  };
+  const handle_req__connect_player = async (
+    req: ServerRequest,
+    uuID: string,
+  ) => {
+    const l__User__connect_player__ReVa = await User.connect_player(
+      g__GameMaps,
+      GameMap_ID.Sandbox,
+      g__Users,
+      uuID,
+    );
+
+    console.info(
+      `Connection attempt: {\n  uuID: ${uuID},\n  l__User__connect_player__ReVa: {\n    status: ${l__User__connect_player__ReVa.status}\n    status_message: ${l__User__connect_player__ReVa.status_message}\n  }\n}`,
+    );
+
+    req.respond({
+      status: l__User__connect_player__ReVa.status,
+      body: JSON.stringify({
+        status_message: l__User__connect_player__ReVa.status_message,
+      }),
+    });
   };
 
   const handle_get_file_request = async (
@@ -56,7 +90,7 @@ async function g__server__handle_requests() {
     const headers = new Headers();
     headers.set("Content-Type", content_type);
     req.respond({
-      status: 200,
+      status: Status.OK,
       headers,
       body: await Deno.open(file_path),
     });
@@ -65,12 +99,24 @@ async function g__server__handle_requests() {
   for await (const req: ServerRequest of g__server) {
     if (!g__server__isRunning) break;
 
-    if (req.url === "/ws?uuID=Jane") {
-      handle_user_connection(req, "Jane");
-    } else if (req.url === "/ws?uuID=John") {
-      handle_user_connection(req, "John");
-    } else if (req.url === "/ws?uuID=Mary") {
-      handle_user_connection(req, "Mary");
+    if (req.url === "/connect_user?uuID=Jane") {
+      handle_req__connect_user(req, "Jane");
+    } else if (req.url === "/connect_user?uuID=John") {
+      handle_req__connect_user(req, "John");
+    } else if (req.url === "/connect_user?uuID=Mary") {
+      handle_req__connect_user(req, "Mary");
+    } else if (req.url === "/ws_player__set?uuID=Jane") {
+      handle_req__ws_player__set(req, "Jane");
+    } else if (req.url === "/ws_player__set?uuID=John") {
+      handle_req__ws_player__set(req, "John");
+    } else if (req.url === "/ws_player__set?uuID=Mary") {
+      handle_req__ws_player__set(req, "Mary");
+    } else if (req.url === "/connect_player?uuID=Jane") {
+      handle_req__connect_player(req, "Jane");
+    } else if (req.url === "/connect_player?uuID=John") {
+      handle_req__connect_player(req, "John");
+    } else if (req.url === "/connect_player?uuID=Mary") {
+      handle_req__connect_player(req, "Mary");
     } else if (req.method === "GET" && req.url === "/") {
       handle_get_file_request(
         req,
@@ -137,10 +183,36 @@ async function g__server__handle_requests() {
         "text/javascript",
         "../ENGINE/mod.js",
       );
+    } else if (req.method === "GET" && req.url === "/vendor/utility/mod.js") {
+      handle_get_file_request(
+        req,
+        "text/javascript",
+        "../vendor/utility/mod.js",
+      );
+    } else if (req.method === "GET" && req.url === "/vendor/utility/Mutex.js") {
+      handle_get_file_request(
+        req,
+        "text/javascript",
+        "../vendor/utility/Mutex.js",
+      );
+    } else if (req.method === "GET" && req.url === "/vendor/utility/sleep.js") {
+      handle_get_file_request(
+        req,
+        "text/javascript",
+        "../vendor/utility/sleep.js",
+      );
+    } else if (
+      req.method === "GET" && req.url === "/vendor/utility/time_stamp.js"
+    ) {
+      handle_get_file_request(
+        req,
+        "text/javascript",
+        "../vendor/utility/time_stamp.js",
+      );
     } else {
       req.respond({
         status: Status.NotFound,
-        body: JSON.stringify({ message: "Error 404 (Request Not Found)" }),
+        body: JSON.stringify({ status_message: "Request Not Found" }),
       });
     }
   }

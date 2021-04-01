@@ -134,20 +134,28 @@ export class GameMap {
     g__GameMaps: Map<GameMap_ID, GameMap>,
     p__GameMap_ID: GameMap_ID,
     player: Player,
-  ): { status: Status } {
+  ): { status: Status; status_message: string } {
     if (g__GameMaps.get(p__GameMap_ID) == undefined) {
-      return ({ status: Status.NotFound });
+      return ({
+        status: Status.NotFound,
+        status_message:
+          `The GameMap with GameMap_ID ${p__GameMap_ID} wasn't found. Could not connect the Player with eeID ${player.eeID}.`,
+      });
     } else {
       g__GameMaps.get(p__GameMap_ID)!.#m__Players_BufferIn.pass(player);
 
-      return ({ status: Status.OK });
+      return ({
+        status: Status.OK,
+        status_message:
+          `The Player with eeID ${player.eeID} was connected to the GameMap with GameMap_ID ${p__GameMap_ID}.`,
+      });
     }
   }
 
-  static disconnect_player(
+  static async disconnect_player(
     g__GameMaps: Map<GameMap_ID, GameMap>,
     eeID: number,
-  ): { status: Status } {
+  ): Promise<{ status: Status; status_message: string }> {
     const l__GameMap_IDs = [...g__GameMaps.keys()];
     let l__GameMap_ID: GameMap_ID;
 
@@ -168,8 +176,14 @@ export class GameMap {
     }
 
     if (found == false) {
-      return ({ status: Status.NotFound });
+      return ({
+        status: Status.NotFound,
+        status_message:
+          `The Player with eeID ${eeID} wasn't found on any GameMap.`,
+      });
     } else {
+      while (true) {} // wait until the end of the #update() loop (could make a petition, which would be rejected or accepted by the loop if the player is safe to be disconnected)
+
       g__GameMaps.get(l__GameMap_ID!)!.#m__Players_BufferOut.pass(
         new GameMap.Players_BufferOut__data__Ty(
           g__GameMaps.get(l__GameMap_ID!)!.#m__Players_Map.get(eeID)!,
@@ -178,12 +192,16 @@ export class GameMap {
         ),
       );
 
-      return ({ status: Status.OK });
+      return ({
+        status: Status.OK,
+        status_message:
+          `The Player with eeID ${eeID} was disconnected from the GameMap with GameMap_ID ${l__GameMap_ID}.`,
+      });
     }
   }
 
-  handle_socket_messages = async (user: User): Promise<void> => {
-    for await (const msg_str of user.player.ws) {
+  handle_socket_messages = async (player: Player): Promise<void> => {
+    for await (const msg_str of player.ws) {
       if (isWebSocketCloseEvent(msg_str)) {
         // ...
 

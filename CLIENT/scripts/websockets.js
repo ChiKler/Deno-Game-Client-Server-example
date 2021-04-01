@@ -1,15 +1,16 @@
-import { g__server_address } from "./main.js";
+import { g__server_address, g__uuID } from "./main.js";
 
-export function ws_make() {
-  const uuID = window.prompt("uuID", "Jane,John,Mary");
-  return (new WebSocket(`ws://${g__server_address}/ws?uuID=${uuID}`));
+export function WS__make(ws_kind) {
+  return (new WebSocket(
+    `ws://${g__server_address}/ws_${ws_kind}__set?uuID=${g__uuID}`,
+  ));
 }
 
-export function ws_msg_send(ws, obj) {
+export function WS_msg__send(ws, obj) {
   ws.send(JSON.stringify(obj));
 }
 
-export function ws_msg_recv(ws, kind, id, callback) {
+export function WS_msg__recv(ws, kind, id, callback) {
   ws.addEventListener("message", function (evt) {
     const obj = JSON.parse(evt.data);
 
