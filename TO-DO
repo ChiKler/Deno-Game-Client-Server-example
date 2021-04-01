@@ -1,3 +1,5 @@
+* I somehow broke the websocket message system on a recent push, should be easy to fix.
+
 * connect_user should be an independant petition to connect_player
 * do something with the return value from User.connect, etc.
 
