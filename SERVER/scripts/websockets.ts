@@ -53,6 +53,7 @@ export async function WS_msg__recv<WS_msg__body__Ty>(
       ) {
         if (msg.kind == kind && msg.id == id) {
           // SHOULD RECURSEVILY CHECK ALL THE PROPERTIES OF WS_msg__body__Ty (TO BE IMPLEMENTED)
+          console.log(msg);
           callback(msg.body);
         }
       } else {

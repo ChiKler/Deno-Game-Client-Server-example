@@ -1,4 +1,4 @@
-import { GameEntity } from "./GameEntity.js";
+import { GameEntity } from "./mod.js";
 
 export var WS_msg_Player_ID;
 (function (WS_msg_Player_ID) {

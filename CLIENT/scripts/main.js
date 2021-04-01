@@ -1,20 +1,51 @@
-import { Player } from "../../ENGINE-CLIENT/mod.js";
-
-//import { GameMap_ID, GameMap } from "../../ENGINE/mod.js";
+import {
+  GameMap,
+  GameMap_ID,
+  Player,
+  WS_msg_Player_ID,
+} from "../../ENGINE-CLIENT/mod.js";
 
 import { WS__make } from "./websockets.js";
+
+import { WS_msg__recv, WS_msg__send } from "./websockets.js";
 
 export const g__uuID = window.prompt("uuID", "Jane,John,Mary");
 
 export const g__server_address = "localhost:3000";
 
 export let g__ws_player;
-export function g__ws_player__set() {
+function g__ws_player__set() {
   g__ws_player = WS__make("player");
+
+  WS_msg__recv(
+    g__ws_player,
+    "WS_msg_Player",
+    WS_msg_Player_ID.Connection,
+    (body) => {
+      console.log(body);
+    },
+  );
+  WS_msg__recv(
+    g__ws_player,
+    "WS_msg_Player",
+    WS_msg_Player_ID.Sighting,
+    (body) => {
+      console.log(body);
+    },
+  );
 }
-export let g__ws_chat;
-export function g__ws_chat__set() {
+let g__ws_chat;
+function g__ws_chat__set() {
   g__ws_chat = WS__make("chat");
+
+  // WS_msg__recv(
+  //   g__ws_chat,
+  //   "WS_msg_Chat",
+  //   WS_msg_Chat_ID.Message,
+  //   (body) => {
+  //     console.log(body);
+  //   },
+  // );
 }
 
 export async function g__connect_user() {
