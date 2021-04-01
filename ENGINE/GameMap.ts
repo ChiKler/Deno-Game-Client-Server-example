@@ -237,7 +237,7 @@ export class GameMap {
           WS_msg__send(player_i.ws, {
             kind: "WS_msg_Player",
             id: WS_msg_Player_ID.Sighting,
-            body: { p__Player: { eeID: player_j.eeID } },
+            body: { p__Player: Player.CLIENT_type_conversion(player_j) },
           });
         }
       });
@@ -258,7 +258,7 @@ export class GameMap {
         kind: "WS_msg_Player",
         id: WS_msg_Player_ID.Connection,
         body: {
-          p__Player: { eeID: player_that_arrives.eeID },
+          p__Player: Player.CLIENT_type_conversion(player_that_arrives),
           p__GameMap_ID: this.m__GameMap_ID,
         },
       });
@@ -267,7 +267,9 @@ export class GameMap {
           WS_msg__send(player_that_was_already_here.ws, {
             kind: "WS_msg_Player",
             id: WS_msg_Player_ID.Sighting,
-            body: { p__Player: { eeID: player_that_arrives.eeID } },
+            body: {
+              p__Player: Player.CLIENT_type_conversion(player_that_arrives),
+            },
           });
         }
       });

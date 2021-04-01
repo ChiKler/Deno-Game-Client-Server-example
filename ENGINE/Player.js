@@ -9,10 +9,7 @@ export var WS_msg_Player_ID;
 })(WS_msg_Player_ID || (WS_msg_Player_ID = {}));
 
 export class Player extends GameEntity {
-  uuID;
-
-  constructor(eeID, uuID) {
+  constructor(eeID) {
     super(eeID);
-    this.uuID = uuID;
   }
 }

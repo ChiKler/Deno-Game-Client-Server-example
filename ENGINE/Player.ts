@@ -2,6 +2,9 @@
 import { GameEntity } from "./GameEntity.ts";
 
 // @ts-ignore
+import { Player as CLIENT_Player } from "../ENGINE/Player.js";
+
+// @ts-ignore
 import { WebSocket } from "https://deno.land/std@0.91.0/ws/mod.ts";
 
 export enum WS_msg_Player_ID {
@@ -18,5 +21,14 @@ export class Player extends GameEntity {
     super(eeID);
 
     this.ws = ws;
+  }
+
+  static CLIENT_type_conversion(p__Player: Player): CLIENT_Player {
+    let l__CLIENT_Player: CLIENT_Player;
+
+    // @ts-ignore
+    l__CLIENT_Player = new CLIENT_Player(p__Player.eeID);
+
+    return (l__CLIENT_Player);
   }
 }
