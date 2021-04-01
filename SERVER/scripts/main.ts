@@ -1,17 +1,22 @@
+// @ts-ignore
 import { GameMap, GameMap_ID } from "../../ENGINE/GameMap.ts";
 
+// @ts-ignore
 import { User } from "./User.ts";
 
 import {
   serve,
   ServerRequest,
+  // @ts-ignore
 } from "https://deno.land/std@0.91.0/http/server.ts";
+// @ts-ignore
 import { Status } from "https://deno.land/std@0.91.0/http/http_status.ts";
 
 import {
   acceptable,
   acceptWebSocket,
   WebSocket,
+  // @ts-ignore
 } from "https://deno.land/std@0.91.0/ws/mod.ts";
 
 const g__Users = new Map<string, User>();
@@ -82,7 +87,7 @@ async function g__server__handle_requests() {
     });
   };
 
-  const handle_get_file_request = async (
+  const handle_req__GET__file = async (
     req: ServerRequest,
     content_type: string,
     file_path: string,
@@ -92,6 +97,7 @@ async function g__server__handle_requests() {
     req.respond({
       status: Status.OK,
       headers,
+      // @ts-ignore
       body: await Deno.open(file_path),
     });
   };
@@ -118,85 +124,85 @@ async function g__server__handle_requests() {
     } else if (req.url === "/connect_player?uuID=Mary") {
       handle_req__connect_player(req, "Mary");
     } else if (req.method === "GET" && req.url === "/") {
-      handle_get_file_request(
+      handle_req__GET__file(
         req,
         "text/html",
         "../CLIENT/index.html",
       );
     } else if (req.method === "GET" && req.url === "/css/main.css") {
-      handle_get_file_request(
+      handle_req__GET__file(
         req,
         "text/css",
         "../CLIENT/css/main.css",
       );
     } else if (req.method === "GET" && req.url === "/scripts/canvas.js") {
-      handle_get_file_request(
+      handle_req__GET__file(
         req,
         "text/javascript",
         "../CLIENT/scripts/canvas.js",
       );
     } else if (req.method === "GET" && req.url === "/scripts/init.js") {
-      handle_get_file_request(
+      handle_req__GET__file(
         req,
         "text/javascript",
         "../CLIENT/scripts/init.js",
       );
     } else if (req.method === "GET" && req.url === "/scripts/main.js") {
-      handle_get_file_request(
+      handle_req__GET__file(
         req,
         "text/javascript",
         "../CLIENT/scripts/main.js",
       );
     } else if (req.method === "GET" && req.url === "/scripts/mod.js") {
-      handle_get_file_request(
+      handle_req__GET__file(
         req,
         "text/javascript",
         "../CLIENT/scripts/mod.js",
       );
     } else if (req.method === "GET" && req.url === "/scripts/websockets.js") {
-      handle_get_file_request(
+      handle_req__GET__file(
         req,
         "text/javascript",
         "../CLIENT/scripts/websockets.js",
       );
     } else if (req.method === "GET" && req.url === "/ENGINE/GameEntity.js") {
-      handle_get_file_request(
+      handle_req__GET__file(
         req,
         "text/javascript",
         "../ENGINE/GameEntity.js",
       );
     } else if (req.method === "GET" && req.url === "/ENGINE/GameMap.js") {
-      handle_get_file_request(
+      handle_req__GET__file(
         req,
         "text/javascript",
         "../ENGINE/GameMap.js",
       );
     } else if (req.method === "GET" && req.url === "/ENGINE/Player.js") {
-      handle_get_file_request(
+      handle_req__GET__file(
         req,
         "text/javascript",
         "../ENGINE/Player.js",
       );
     } else if (req.method === "GET" && req.url === "/ENGINE/mod.js") {
-      handle_get_file_request(
+      handle_req__GET__file(
         req,
         "text/javascript",
         "../ENGINE/mod.js",
       );
     } else if (req.method === "GET" && req.url === "/vendor/utility/mod.js") {
-      handle_get_file_request(
+      handle_req__GET__file(
         req,
         "text/javascript",
         "../vendor/utility/mod.js",
       );
     } else if (req.method === "GET" && req.url === "/vendor/utility/Mutex.js") {
-      handle_get_file_request(
+      handle_req__GET__file(
         req,
         "text/javascript",
         "../vendor/utility/Mutex.js",
       );
     } else if (req.method === "GET" && req.url === "/vendor/utility/sleep.js") {
-      handle_get_file_request(
+      handle_req__GET__file(
         req,
         "text/javascript",
         "../vendor/utility/sleep.js",
@@ -204,7 +210,7 @@ async function g__server__handle_requests() {
     } else if (
       req.method === "GET" && req.url === "/vendor/utility/time_stamp.js"
     ) {
-      handle_get_file_request(
+      handle_req__GET__file(
         req,
         "text/javascript",
         "../vendor/utility/time_stamp.js",
@@ -218,6 +224,7 @@ async function g__server__handle_requests() {
   }
 }
 
+// @ts-ignore
 await Promise.all([
   g__server__handle_requests(),
   GameMap.g__GameMaps__handler(g__GameMaps, g__server__isRunning),

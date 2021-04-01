@@ -1,3 +1,4 @@
+// @ts-ignore
 import { Mutex } from "../vendor/utility/Mutex.ts";
 
 export abstract class GameEntity {

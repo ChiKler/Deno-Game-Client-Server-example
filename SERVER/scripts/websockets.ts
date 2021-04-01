@@ -1,3 +1,4 @@
+// @ts-ignore
 import { WebSocket } from "https://deno.land/std@0.91.0/ws/mod.ts";
 
 export interface WS_msg {

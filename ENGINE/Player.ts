@@ -1,5 +1,7 @@
+// @ts-ignore
 import { GameEntity } from "./GameEntity.ts";
 
+// @ts-ignore
 import { WebSocket } from "https://deno.land/std@0.91.0/ws/mod.ts";
 
 export enum WS_msg_Player_ID {

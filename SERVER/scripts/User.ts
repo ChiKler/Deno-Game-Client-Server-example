@@ -1,7 +1,11 @@
+// @ts-ignore
 import { GameEntity, GameMap, GameMap_ID, Player } from "../../ENGINE/mod.ts";
 
+// @ts-ignore
 import { Status } from "https://deno.land/std@0.91.0/http/http_status.ts";
+// @ts-ignore
 import { v4 } from "https://deno.land/std@0.91.0/uuid/mod.ts";
+// @ts-ignore
 import { WebSocket } from "https://deno.land/std@0.91.0/ws/mod.ts";
 
 export class User {
