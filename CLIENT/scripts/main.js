@@ -13,7 +13,7 @@ export const g__uuID = window.prompt("uuID", "Jane,John,Mary");
 
 export const g__server_address = "localhost:3000";
 
-export let g__ws_player;
+let g__ws_player;
 function g__ws_player__set() {
   g__ws_player = WS__make("player");
 
