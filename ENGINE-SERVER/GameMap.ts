@@ -17,70 +17,6 @@ export enum GameMap_ID {
 }
 
 export class GameMap {
-  readonly m__GameMap_ID: GameMap_ID;
-
-  #isRunning: boolean;
-
-  #m__Players_Map: Map<number, Player>;
-
-  // @ts-ignore
-  #m__Players_BufferIn: GameMap.Players_BufferIn;
-  // @ts-ignore
-  #m__Players_BufferOut: GameMap.Players_BufferOut;
-
-  private constructor(p__GameMap_ID: GameMap_ID) {
-    this.m__GameMap_ID = p__GameMap_ID;
-
-    this.#isRunning = false;
-
-    this.#m__Players_Map = new Map<number, Player>();
-
-    this.#m__Players_BufferIn = new GameMap.Players_BufferIn();
-    this.#m__Players_BufferOut = new GameMap.Players_BufferOut();
-  }
-  private static async open(
-    g__GameMaps: Map<GameMap_ID, GameMap>,
-    p__GameMap_ID: GameMap_ID,
-  ): Promise<void> {
-    const l__GameMap_IDs = [...g__GameMaps.keys()];
-
-    let found = false;
-    let i = 0;
-
-    while ((found == false) && (i < l__GameMap_IDs.length)) {
-      if (l__GameMap_IDs[i] == p__GameMap_ID) {
-        found = true;
-        break;
-      } else {
-        i++;
-      }
-    }
-
-    if (found == true) {
-      try {
-        throw new TypeError(
-          `Invalid GameMap.open() argument { p__GameMap_ID: ${p__GameMap_ID} } ~ Only one GameMap with the same GameMap_ID can exist at the same time.`,
-        );
-      } catch (err) {
-        console.error(err);
-      }
-    } else {
-      g__GameMaps.set(p__GameMap_ID, new GameMap(p__GameMap_ID));
-    }
-  }
-  private static async close(
-    g__GameMaps: Map<GameMap_ID, GameMap>,
-    p__GameMap_ID: GameMap_ID,
-  ): Promise<void> {
-    if (g__GameMaps.get(p__GameMap_ID) == undefined) return;
-    const l__GameMap = g__GameMaps.get(p__GameMap_ID)!;
-    if (l__GameMap.#isRunning) {
-      await l__GameMap.#update__stop();
-    }
-
-    await sleep(8000); // wait for all the players at g__GameMaps.get(p__GameMap_ID).#m__Players_BufferOut to be disconnected // e.g. a player may still be waiting to receive rewards from an npc they had aggroed
-  }
-
   static Players_Buffer = class<T> {
     #data: Array<T>; // should use ArrayBuffer as buffer and Uint8Array as view
 
@@ -127,10 +63,95 @@ export class GameMap {
       }
     }
   };
-
   static Players_BufferOut = class extends // @ts-ignore
   GameMap.Players_Buffer<GameMap.Players_BufferOut__data__Ty> {
   };
+
+  static PetitionToDisconnectPlayer = class {
+    readonly eeID: number;
+    hasBeenResolved: boolean;
+
+    status?: Status;
+    status_message?: string;
+
+    constructor(eeID: number) {
+      this.eeID = eeID;
+
+      this.hasBeenResolved = false;
+    }
+  };
+
+  readonly m__GameMap_ID: GameMap_ID;
+
+  #isRunning: boolean;
+
+  #m__Players_Map: Map<number, Player>;
+
+  // @ts-ignore
+  #m__Players_BufferIn: GameMap.Players_BufferIn;
+  // @ts-ignore
+  #m__Players_BufferOut: GameMap.Players_BufferOut;
+
+  // @ts-ignore
+  #m__PetitionsToDisconnectPlayer: Array<GameMap.PetitionToDisconnectPlayer>;
+
+  private constructor(p__GameMap_ID: GameMap_ID) {
+    this.m__GameMap_ID = p__GameMap_ID;
+
+    this.#isRunning = false;
+
+    this.#m__Players_Map = new Map<number, Player>();
+
+    this.#m__Players_BufferIn = new GameMap.Players_BufferIn();
+    this.#m__Players_BufferOut = new GameMap.Players_BufferOut();
+
+    this.#m__PetitionsToDisconnectPlayer = new Array<
+      // @ts-ignore
+      GameMap.PetitionToDisconnectPlayer
+    >();
+  }
+  private static async open(
+    g__GameMaps: Map<GameMap_ID, GameMap>,
+    p__GameMap_ID: GameMap_ID,
+  ): Promise<void> {
+    const l__GameMap_IDs = [...g__GameMaps.keys()];
+
+    let found = false;
+    let i = 0;
+
+    while ((found == false) && (i < l__GameMap_IDs.length)) {
+      if (l__GameMap_IDs[i] == p__GameMap_ID) {
+        found = true;
+        break;
+      } else {
+        i++;
+      }
+    }
+
+    if (found == true) {
+      try {
+        throw new TypeError(
+          `Invalid GameMap.open() argument { p__GameMap_ID: ${p__GameMap_ID} } ~ Only one GameMap with the same GameMap_ID can exist at the same time.`,
+        );
+      } catch (err) {
+        console.error(err);
+      }
+    } else {
+      g__GameMaps.set(p__GameMap_ID, new GameMap(p__GameMap_ID));
+    }
+  }
+  private static async close(
+    g__GameMaps: Map<GameMap_ID, GameMap>,
+    p__GameMap_ID: GameMap_ID,
+  ): Promise<void> {
+    if (g__GameMaps.get(p__GameMap_ID) == undefined) return;
+    const l__GameMap = g__GameMaps.get(p__GameMap_ID)!;
+    if (l__GameMap.#isRunning) {
+      await l__GameMap.#update__stop();
+    }
+
+    await sleep(8000); // wait for all the players at g__GameMaps.get(p__GameMap_ID).#m__Players_BufferOut to be disconnected // e.g. a player may still be waiting to receive rewards from an npc they had aggroed
+  }
 
   static connect_player(
     g__GameMaps: Map<GameMap_ID, GameMap>,
@@ -184,20 +205,25 @@ export class GameMap {
           `The Player with eeID ${eeID} wasn't found on any GameMap.`,
       });
     } else {
-      await sleep(8000); // wait until the end of the #update() loop (could make a petition, which would be rejected or accepted by the loop if the player is safe to be disconnected)
+      const player_to_be_disconnected = g__GameMaps.get(l__GameMap_ID!)!
+        .#m__Players_Map.get(
+          eeID,
+        )!;
 
-      g__GameMaps.get(l__GameMap_ID!)!.#m__Players_BufferOut.pass(
-        new GameMap.Players_BufferOut__data__Ty(
-          g__GameMaps.get(l__GameMap_ID!)!.#m__Players_Map.get(eeID)!,
-          true,
-          undefined,
-        ),
+      g__GameMaps.get(l__GameMap_ID!)!.#m__Players_Map.delete(eeID);
+
+      const l__PetitionToDisconnectPlayer = new GameMap
+        .PetitionToDisconnectPlayer(eeID);
+
+      g__GameMaps.get(l__GameMap_ID!)!.#m__PetitionsToDisconnectPlayer.push(
+        l__PetitionToDisconnectPlayer,
       );
 
+      while (!l__PetitionToDisconnectPlayer.hasBeenResolved) {}
+
       return ({
-        status: Status.OK,
-        status_message:
-          `The Player with eeID ${eeID} was disconnected from the GameMap with GameMap_ID ${l__GameMap_ID!}.`,
+        status: l__PetitionToDisconnectPlayer.status!,
+        status_message: l__PetitionToDisconnectPlayer.status_message!,
       });
     }
   }
@@ -226,6 +252,37 @@ export class GameMap {
       return (elapsed_ms() * 0.001);
     };
 
+    let m__PetitionsToDisconnectPlayer__pop__ReVa:
+      // @ts-ignore
+      (GameMap.PetitionToDisconnectPlayer | undefined);
+    while (
+      (m__PetitionsToDisconnectPlayer__pop__ReVa = this
+        .#m__PetitionsToDisconnectPlayer.pop()) != undefined
+    ) {
+      const l__PetitionToDisconnectPlayer =
+        m__PetitionsToDisconnectPlayer__pop__ReVa!;
+
+      const l__Player__to_be_disconnected = this.#m__Players_Map.get(
+        l__PetitionToDisconnectPlayer.eeID,
+      )!;
+
+      this.#m__Players_Map.delete(l__PetitionToDisconnectPlayer.eeID);
+
+      this.#m__Players_BufferOut.pass(
+        new GameMap.Players_BufferOut__data__Ty(
+          l__Player__to_be_disconnected,
+          true,
+          undefined,
+        ),
+      );
+
+      l__PetitionToDisconnectPlayer.status = Status.OK;
+      l__PetitionToDisconnectPlayer.status_message =
+        `The Player with eeID ${l__PetitionToDisconnectPlayer.eeID} was disconnected from the GameMap with GameMap_ID ${this.m__GameMap_ID}.`;
+
+      l__PetitionToDisconnectPlayer.hasBeenResolved = true;
+    }
+
     this.#m__Players_Map.forEach((player_i: Player) => {
       this.#m__Players_Map.forEach((player_j: Player) => {
         if (player_j.eeID != player_i.eeID) {
@@ -243,7 +300,7 @@ export class GameMap {
       (m__Players_BufferIn__take__ReVa = this.#m__Players_BufferIn.take()) !=
         undefined
     ) {
-      const player_that_arrives = m__Players_BufferIn__take__ReVa;
+      const player_that_arrives = m__Players_BufferIn__take__ReVa!;
 
       this.#m__Players_Map.set(
         player_that_arrives.eeID,
