@@ -22,7 +22,7 @@ function g__ws_player__set() {
     "WS_msg_Player",
     WS_msg_Player_ID.Connection,
     (body) => {
-      console.log(body);
+      // ..
     },
   );
   WS_msg__recv(
@@ -30,7 +30,7 @@ function g__ws_player__set() {
     "WS_msg_Player",
     WS_msg_Player_ID.Sighting,
     (body) => {
-      console.log(body);
+      // ..
     },
   );
 }

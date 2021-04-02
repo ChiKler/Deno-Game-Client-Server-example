@@ -101,7 +101,6 @@ export class User {
   ): Promise<{
     status: Status;
     status_message: string;
-    wasUserAlreadyConnected: boolean;
   }> {
     const ssID = v4.generate();
 
@@ -122,11 +121,18 @@ export class User {
 
     g__Users.get(uuID)!.#isConnected = true;
 
-    return ({
-      status: Status.OK,
-      status_message: `The User with uuID ${uuID} has been connected.`,
-      wasUserAlreadyConnected,
-    });
+    if (wasUserAlreadyConnected) {
+      return ({
+        status: Status.OK,
+        status_message:
+          `The User with uuID ${uuID} had already been connected.`,
+      });
+    } else {
+      return ({
+        status: Status.OK,
+        status_message: `The User with uuID ${uuID} has been connected.`,
+      });
+    }
   }
 
   static async disconnect_player(
@@ -134,57 +140,58 @@ export class User {
     g__Users: Map<string, User>,
     uuID: string,
   ): Promise<{ status: Status; status_message: string }> {
-    const user = g__Users.get(uuID)!;
+    const user = g__Users.get(uuID);
 
-    if (user.#player == undefined) {
+    if ((user == undefined) || (!user!.#isConnected)) {
+      return ({
+        status: Status.Conflict,
+        status_message: `The User with uuID ${uuID} wasn't connected.`,
+      });
+    } else if (user!.#player == undefined) {
       return ({
         status: Status.Conflict,
         status_message:
           `The Player of the User with uuID ${uuID} wasn't connected.`,
       });
+    } else {
+      const l__GameMap__disconnect_player__ReVa = await GameMap
+        .disconnect_player(
+          g__GameMaps,
+          user!.#player!.eeID,
+        );
+
+      return ({
+        status: l__GameMap__disconnect_player__ReVa.status,
+        status_message: l__GameMap__disconnect_player__ReVa.status_message,
+      });
     }
-
-    const l__GameMap__disconnect_player__ReVa = await GameMap.disconnect_player(
-      g__GameMaps,
-      user.#player!.eeID,
-    );
-
-    if (l__GameMap__disconnect_player__ReVa.status == Status.OK) {
-      g__Users.delete(uuID);
-    }
-
-    return ({
-      status: l__GameMap__disconnect_player__ReVa.status,
-      status_message: l__GameMap__disconnect_player__ReVa.status_message,
-    });
   }
   static async disconnect_user(
     g__GameMaps: Map<GameMap_ID, GameMap>,
     g__Users: Map<string, User>,
     uuID: string,
   ): Promise<{ status: Status; status_message: string }> {
-    const user = g__Users.get(uuID)!;
+    const user = g__Users.get(uuID);
 
-    if (user == undefined) {
+    if ((user == undefined) || (!user!.#isConnected)) {
       return ({
-        status: Status.NotFound,
+        status: Status.Conflict,
         status_message: `The User with uuID ${uuID} wasn't connected.`,
       });
-    } else if (user.#isConnected) {
+    } else {
       const l__User__disconnect_player__ReVa = await User.disconnect_player(
         g__GameMaps,
         g__Users,
         uuID,
       );
 
+      if (l__User__disconnect_player__ReVa.status == Status.OK) {
+        g__Users.delete(uuID);
+      }
+
       return ({
         status: l__User__disconnect_player__ReVa.status,
         status_message: l__User__disconnect_player__ReVa.status_message,
-      });
-    } else {
-      return ({
-        status: Status.Conflict,
-        status_message: `The User with uuID ${uuID} wasn't connected.`,
       });
     }
   }
