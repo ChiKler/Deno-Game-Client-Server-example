@@ -176,6 +176,7 @@ export class User {
             );
           }
 
+          user__isConnected__mutex__unlock();
           return ({
             status: l__GameMap__connect_player__ReVa.status,
             status_message: l__GameMap__connect_player__ReVa.status_message,
