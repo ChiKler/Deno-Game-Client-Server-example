@@ -68,16 +68,13 @@ export class GameMap {
   };
 
   static PetitionToDisconnectPlayer = class {
-    readonly eeID: number;
-    hasBeenResolved: boolean;
+    hasBeenDisconnected: boolean;
 
     status?: Status;
     status_message?: string;
 
-    constructor(eeID: number) {
-      this.eeID = eeID;
-
-      this.hasBeenResolved = false;
+    constructor() {
+      this.hasBeenDisconnected = false;
     }
   };
 
@@ -92,8 +89,11 @@ export class GameMap {
   // @ts-ignore
   #m__Players_BufferOut: GameMap.Players_BufferOut;
 
-  // @ts-ignore
-  #m__PetitionsToDisconnectPlayer: Array<GameMap.PetitionToDisconnectPlayer>;
+  #m__PetitionsToDisconnectPlayer_Map: Map<
+    number,
+    // @ts-ignore
+    GameMap.PetitionToDisconnectPlayer
+  >;
 
   private constructor(p__GameMap_ID: GameMap_ID) {
     this.m__GameMap_ID = p__GameMap_ID;
@@ -105,7 +105,8 @@ export class GameMap {
     this.#m__Players_BufferIn = new GameMap.Players_BufferIn();
     this.#m__Players_BufferOut = new GameMap.Players_BufferOut();
 
-    this.#m__PetitionsToDisconnectPlayer = new Array<
+    this.#m__PetitionsToDisconnectPlayer_Map = new Map<
+      number,
       // @ts-ignore
       GameMap.PetitionToDisconnectPlayer
     >();
@@ -205,21 +206,26 @@ export class GameMap {
           `The Player with eeID ${eeID} wasn't found on any GameMap.`,
       });
     } else {
-      const player_to_be_disconnected = g__GameMaps.get(l__GameMap_ID!)!
-        .#m__Players_Map.get(
-          eeID,
-        )!;
+      g__GameMaps.get(l__GameMap_ID!)!.#m__PetitionsToDisconnectPlayer_Map.set(
+        eeID,
+        new GameMap.PetitionToDisconnectPlayer(),
+      );
+      console.log("test0");
+      while (
+        !g__GameMaps.get(l__GameMap_ID!)!.#m__PetitionsToDisconnectPlayer_Map
+          .get(eeID)!.hasBeenDisconnected
+      ) {
+      }
+      console.log("test1");
 
-      g__GameMaps.get(l__GameMap_ID!)!.#m__Players_Map.delete(eeID);
+      g__GameMaps.get(l__GameMap_ID!)!.#m__PetitionsToDisconnectPlayer_Map
+        .delete(eeID);
 
-      const l__PetitionToDisconnectPlayer = new GameMap
-        .PetitionToDisconnectPlayer(eeID);
+      const l__PetitionToDisconnectPlayer = g__GameMaps.get(l__GameMap_ID!)!
+        .#m__PetitionsToDisconnectPlayer_Map.get(eeID)!;
 
-      g__GameMaps.get(l__GameMap_ID!)!.#m__PetitionsToDisconnectPlayer.push(
-        l__PetitionToDisconnectPlayer,
-      ); // this generates a bug (l__PetitionToDisconnectPlayer gets copied?)
-
-      while (!l__PetitionToDisconnectPlayer.hasBeenResolved) {}
+      g__GameMaps.get(l__GameMap_ID!)!.#m__PetitionsToDisconnectPlayer_Map
+        .delete(eeID);
 
       return ({
         status: l__PetitionToDisconnectPlayer.status!,
@@ -252,35 +258,38 @@ export class GameMap {
       return (elapsed_ms() * 0.001);
     };
 
-    let m__PetitionsToDisconnectPlayer__pop__ReVa:
-      // @ts-ignore
-      (GameMap.PetitionToDisconnectPlayer | undefined);
-    while (
-      (m__PetitionsToDisconnectPlayer__pop__ReVa = this
-        .#m__PetitionsToDisconnectPlayer.pop()) != undefined
-    ) {
-      const l__PetitionToDisconnectPlayer =
-        m__PetitionsToDisconnectPlayer__pop__ReVa!;
+    const m__PetitionsToDisconnectPlayer_Map__keys = [
+      ...this.#m__PetitionsToDisconnectPlayer_Map.keys(),
+    ];
 
-      const l__Player__to_be_disconnected = this.#m__Players_Map.get(
-        l__PetitionToDisconnectPlayer.eeID,
-      )!;
+    for (let i = 0; i < m__PetitionsToDisconnectPlayer_Map__keys.length; i++) {
+      try {
+        const eeID = m__PetitionsToDisconnectPlayer_Map__keys[i];
 
-      this.#m__Players_Map.delete(l__PetitionToDisconnectPlayer.eeID);
+        const l__PetitionToDisconnectPlayer = this
+          .#m__PetitionsToDisconnectPlayer_Map.get(eeID)!;
+        const l__Player__to_be_disconnected = this.#m__Players_Map.get(eeID)!;
 
-      this.#m__Players_BufferOut.pass(
-        new GameMap.Players_BufferOut__data__Ty(
-          l__Player__to_be_disconnected,
-          true,
-          undefined,
-        ),
-      );
+        this.#m__Players_Map.delete(eeID);
 
-      l__PetitionToDisconnectPlayer.status = Status.OK;
-      l__PetitionToDisconnectPlayer.status_message =
-        `The Player with eeID ${l__PetitionToDisconnectPlayer.eeID} was disconnected from the GameMap with GameMap_ID ${this.m__GameMap_ID}.`;
+        this.#m__Players_BufferOut.pass(
+          new GameMap.Players_BufferOut__data__Ty(
+            l__Player__to_be_disconnected,
+            true,
+            undefined,
+          ),
+        );
 
-      l__PetitionToDisconnectPlayer.hasBeenResolved = true;
+        l__PetitionToDisconnectPlayer.status = Status.OK;
+        l__PetitionToDisconnectPlayer.status_message =
+          `The Player with eeID ${eeID} was disconnected from the GameMap with GameMap_ID ${this.m__GameMap_ID}.`;
+
+        l__PetitionToDisconnectPlayer.hasBeenDisconnected = true;
+      } catch (err) {
+        // this happens when m__PetitionsToDisconnectPlayer_Map.get(eeID)
+        // is undefined because it got deleted at GameMap.disconnect_player()
+        // (do nothing with the error, just catch it)
+      }
     }
 
     this.#m__Players_Map.forEach((player_i: Player) => {
