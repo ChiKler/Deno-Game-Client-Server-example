@@ -63,9 +63,16 @@ export class User {
       player = undefined;
     }
 
-    g__Users.set(uuID, new User(uuID, ssID, player));
+    const user = new User(uuID, ssID, player);
 
-    g__Users.get(uuID)!.#isConnected = true;
+    const user__isConnected__mutex__unlock = await user.#isConnected__mutex
+      .lock();
+
+    g__Users.set(uuID, user);
+
+    user.#isConnected = true;
+
+    user__isConnected__mutex__unlock();
 
     if (wasUserAlreadyConnected) {
       return ({
@@ -103,7 +110,7 @@ export class User {
         return ({
           status: Status.Conflict,
           status_message:
-            `The User with uuID ${uuID} can't be connected due to a similar petition being requested simultaneously. Please try again.`,
+            `The WebSocket "ws_player" of the User with uuID ${uuID} can't be set due to a similar petition being requested simultaneously. Please try again.`,
         });
       }
 
@@ -140,7 +147,7 @@ export class User {
         return ({
           status: Status.Conflict,
           status_message:
-            `The User with uuID ${uuID} can't be connected due to a similar petition being requested simultaneously. Please try again.`,
+            `The Player of the User with uuID ${uuID} can't be connected due to a similar petition being requested simultaneously. Please try again.`,
         });
       }
 
@@ -219,7 +226,7 @@ export class User {
         return ({
           status: Status.Conflict,
           status_message:
-            `The User with uuID ${uuID} can't be connected due to a similar petition being requested simultaneously. Please try again.`,
+            `The Player of the User with uuID ${uuID} can't be disconnected due to a similar petition being requested simultaneously. Please try again.`,
         });
       }
 
@@ -273,7 +280,7 @@ export class User {
         return ({
           status: Status.Conflict,
           status_message:
-            `The User with uuID ${uuID} can't be connected due to a similar petition being requested simultaneously. Please try again.`,
+            `The User with uuID ${uuID} can't be disconnected due to a similar petition being requested simultaneously. Please try again.`,
         });
       }
 
@@ -293,15 +300,23 @@ export class User {
         user__isConnected__mutex__unlock = await user.#isConnected__mutex
           .lock();
 
-        if (l__User__disconnect_player__ReVa.status == Status.OK) {
+        if (
+          (l__User__disconnect_player__ReVa.status == Status.OK) ||
+          (l__User__disconnect_player__ReVa.status == Status.Conflict)
+        ) {
           g__Users.delete(uuID);
+          user__isConnected__mutex__unlock();
+          return ({
+            status: Status.OK,
+            status_message: `The User with uuID ${uuID} has been disconnected.`,
+          });
+        } else {
+          user__isConnected__mutex__unlock();
+          return ({
+            status: l__User__disconnect_player__ReVa.status,
+            status_message: l__User__disconnect_player__ReVa.status_message,
+          });
         }
-
-        user__isConnected__mutex__unlock();
-        return ({
-          status: l__User__disconnect_player__ReVa.status,
-          status_message: l__User__disconnect_player__ReVa.status_message,
-        });
       }
     }
   }
