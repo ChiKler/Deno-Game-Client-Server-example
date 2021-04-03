@@ -27,10 +27,18 @@ const g__server = serve({ port: 3000 });
 const g__server__isRunning = true;
 
 async function g__server__handle_requests() {
+  const get_uuID_from_req_url = (req_url: string) => {
+    for (
+      const [key, value] of new URLSearchParams(req_url.split("?")[1]).entries()
+    ) {
+      if (key == "uuID") return (value);
+    }
+  };
   const handle_req__connect_user = async (
     req: ServerRequest,
-    uuID: string,
   ) => {
+    const uuID = get_uuID_from_req_url(req.url)!;
+
     const l__User__connect_user__ReVa = await User.connect_user(
       g__Users,
       uuID,
@@ -49,7 +57,6 @@ async function g__server__handle_requests() {
   };
   const handle_req__ws_player__set = async (
     req: ServerRequest,
-    uuID: string,
   ) => {
     if (acceptable(req)) {
       const ws_player__new = await acceptWebSocket({
@@ -58,6 +65,8 @@ async function g__server__handle_requests() {
         bufWriter: req.w,
         headers: req.headers,
       });
+
+      const uuID = get_uuID_from_req_url(req.url)!;
 
       const l__User__ws_player__set__ReVa = await User.ws_player__set(
         g__Users,
@@ -72,8 +81,9 @@ async function g__server__handle_requests() {
   };
   const handle_req__connect_player = async (
     req: ServerRequest,
-    uuID: string,
   ) => {
+    const uuID = get_uuID_from_req_url(req.url)!;
+
     const l__User__connect_player__ReVa = await User.connect_player(
       g__GameMaps,
       GameMap_ID.Sandbox,
@@ -94,8 +104,9 @@ async function g__server__handle_requests() {
   };
   const handle_req__disconnect_player = async (
     req: ServerRequest,
-    uuID: string,
   ) => {
+    const uuID = get_uuID_from_req_url(req.url)!;
+
     const l__User__disconnect_player__ReVa = await User.disconnect_player(
       g__GameMaps,
       g__Users,
@@ -115,8 +126,9 @@ async function g__server__handle_requests() {
   };
   const handle_req__disconnect_user = async (
     req: ServerRequest,
-    uuID: string,
   ) => {
+    const uuID = get_uuID_from_req_url(req.url)!;
+
     const l__User__disconnect_user__ReVa = await User.disconnect_user(
       g__GameMaps,
       g__Users,
@@ -154,36 +166,16 @@ async function g__server__handle_requests() {
   for await (const req: ServerRequest of g__server) {
     if (!g__server__isRunning) break;
 
-    if (req.url === "/connect_user?uuID=Jane") {
-      handle_req__connect_user(req, "Jane");
-    } else if (req.url === "/connect_user?uuID=John") {
-      handle_req__connect_user(req, "John");
-    } else if (req.url === "/connect_user?uuID=Mary") {
-      handle_req__connect_user(req, "Mary");
-    } else if (req.url === "/ws_player__set?uuID=Jane") {
-      handle_req__ws_player__set(req, "Jane");
-    } else if (req.url === "/ws_player__set?uuID=John") {
-      handle_req__ws_player__set(req, "John");
-    } else if (req.url === "/ws_player__set?uuID=Mary") {
-      handle_req__ws_player__set(req, "Mary");
-    } else if (req.url === "/connect_player?uuID=Jane") {
-      handle_req__connect_player(req, "Jane");
-    } else if (req.url === "/connect_player?uuID=John") {
-      handle_req__connect_player(req, "John");
-    } else if (req.url === "/connect_player?uuID=Mary") {
-      handle_req__connect_player(req, "Mary");
-    } else if (req.url === "/disconnect_player?uuID=Jane") {
-      handle_req__disconnect_player(req, "Jane");
-    } else if (req.url === "/disconnect_player?uuID=John") {
-      handle_req__disconnect_player(req, "John");
-    } else if (req.url === "/disconnect_player?uuID=Mary") {
-      handle_req__disconnect_player(req, "Mary");
-    } else if (req.url === "/disconnect_user?uuID=Jane") {
-      handle_req__disconnect_user(req, "Jane");
-    } else if (req.url === "/disconnect_user?uuID=John") {
-      handle_req__disconnect_user(req, "John");
-    } else if (req.url === "/disconnect_user?uuID=Mary") {
-      handle_req__disconnect_user(req, "Mary");
+    if (req.url.split("?")[0] == "/connect_user") {
+      handle_req__connect_user(req);
+    } else if (req.url.split("?")[0] == "/ws_player__set") {
+      handle_req__ws_player__set(req);
+    } else if (req.url.split("?")[0] == "/connect_player") {
+      handle_req__connect_player(req);
+    } else if (req.url.split("?")[0] == "/disconnect_player") {
+      handle_req__disconnect_player(req);
+    } else if (req.url.split("?")[0] == "/disconnect_user") {
+      handle_req__disconnect_user(req);
     } else if (req.method === "GET" && req.url === "/") {
       handle_req__GET__file(
         req,
