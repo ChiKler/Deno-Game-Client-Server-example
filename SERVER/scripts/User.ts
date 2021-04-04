@@ -161,6 +161,8 @@ export class User {
             `The User with uuID ${uuID} doesn't have a WebSocket for their Player.`,
         });
       } else {
+        const l__GameMap = g__GameMaps.get(GameMap_ID.Sandbox)!;
+
         if (user!.#player == undefined) {
           user!.#player = new Player(
             await GameEntity.eeID_generate(1),
@@ -174,8 +176,8 @@ export class User {
           );
 
           if (l__GameMap__connect_player__ReVa.status == Status.OK) {
-            g__GameMaps.get(GameMap_ID.Sandbox)!.handle_socket_messages(
-              user!.#player!,
+            l__GameMap.handle_socket_messages(
+              user!.#ws_player!,
             );
           }
 
@@ -185,8 +187,10 @@ export class User {
             status_message: l__GameMap__connect_player__ReVa.status_message,
           });
         } else {
-          g__GameMaps.get(GameMap_ID.Sandbox)!.handle_socket_messages(
-            user!.#player!,
+          user!.#player!.ws_player = user!.#ws_player!;
+
+          l__GameMap.handle_socket_messages(
+            user!.#ws_player!,
           );
 
           user__isConnected__mutex__unlock();

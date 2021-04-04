@@ -162,8 +162,7 @@ async function g__server__handle_requests() {
     });
   };
 
-  // @ts-ignore
-  for await (const req: ServerRequest of g__server) {
+  for await (const req of g__server) {
     if (!g__server__isRunning) break;
 
     if (req.url.split("?")[0] == "/connect_user") {

@@ -6,11 +6,12 @@ import { sleep, time_stamp } from "../vendor/utility/mod.ts";
 
 // @ts-ignore
 import { Status } from "https://deno.land/std@0.91.0/http/http_status.ts";
-// @ts-ignore
-import { isWebSocketCloseEvent } from "https://deno.land/std@0.91.0/ws/mod.ts";
-
-// @ts-ignore
-import { WS_msg__recv, WS_msg__send } from "../SERVER/scripts/websockets.ts";
+import {
+  isWebSocketCloseEvent,
+  WebSocket,
+  WebSocketEvent,
+  // @ts-ignore
+} from "https://deno.land/std@0.91.0/ws/mod.ts";
 
 export enum GameMap_ID {
   Sandbox,
@@ -231,14 +232,14 @@ export class GameMap {
     }
   }
 
-  handle_socket_messages = async (player: Player): Promise<void> => {
-    for await (const msg_str of player.ws) {
+  handle_socket_messages = async (ws_player: WebSocket): Promise<void> => {
+    for await (const msg_str of ws_player) {
       if (isWebSocketCloseEvent(msg_str)) {
         // ...
 
         break;
       } else {
-        // recieve and handle socket messages
+        // receive and handle socket messages
       }
     }
   };
@@ -292,11 +293,7 @@ export class GameMap {
     this.#m__Players_Map.forEach((player_i: Player) => {
       this.#m__Players_Map.forEach((player_j: Player) => {
         if (player_j.eeID != player_i.eeID) {
-          WS_msg__send(player_i.ws, {
-            kind: "WS_msg_Player",
-            id: WS_msg_Player_ID.Sighting,
-            body: { p__Player: Player.CLIENT_type_conversion(player_j) },
-          });
+          Player.handle__WS_msg_Player__Sighting__send(player_i, player_j);
         }
       });
     });
@@ -312,23 +309,18 @@ export class GameMap {
         player_that_arrives.eeID,
         player_that_arrives,
       );
-      WS_msg__send(player_that_arrives.ws, {
-        kind: "WS_msg_Player",
-        id: WS_msg_Player_ID.Connection,
-        body: {
-          p__Player: Player.CLIENT_type_conversion(player_that_arrives),
-          p__GameMap_ID: this.m__GameMap_ID,
-        },
-      });
+
+      Player.handle__WS_msg_Player__Connection__send(
+        player_that_arrives,
+        this.m__GameMap_ID,
+      );
+
       this.#m__Players_Map.forEach((player_that_was_already_here: Player) => {
         if (player_that_was_already_here.eeID != player_that_arrives.eeID) {
-          WS_msg__send(player_that_was_already_here.ws, {
-            kind: "WS_msg_Player",
-            id: WS_msg_Player_ID.Sighting,
-            body: {
-              p__Player: Player.CLIENT_type_conversion(player_that_arrives),
-            },
-          });
+          Player.handle__WS_msg_Player__Sighting__send(
+            player_that_arrives,
+            player_that_was_already_here,
+          );
         }
       });
     }
