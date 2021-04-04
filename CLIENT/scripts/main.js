@@ -1,15 +1,8 @@
-import {
-  GameMap,
-  GameMap_ID,
-  Player,
-  WS_msg_Player_ID,
-} from "../../ENGINE-CLIENT/mod.js";
+import { GameMap, GameMap_ID, Player } from "../../ENGINE-CLIENT/mod.js";
 
 import { WS__make } from "./websockets.js";
 
-import { WS_msg__recv, WS_msg__send } from "./websockets.js";
-
-export const g__uuID = window.prompt("uuID", "Jane,John,Mary");
+export const g__uuID = window.prompt("uuID", "Jane,John");
 
 export const g__server_address = "localhost:3000";
 
@@ -17,35 +10,14 @@ let g__ws_player;
 function g__ws_player__set() {
   g__ws_player = WS__make("player");
 
-  WS_msg__recv(
-    g__ws_player,
-    "WS_msg_Player",
-    WS_msg_Player_ID.Connection,
-    (body) => {
-      // ..
-    },
-  );
-  WS_msg__recv(
-    g__ws_player,
-    "WS_msg_Player",
-    WS_msg_Player_ID.Sighting,
-    (body) => {
-      // ..
-    },
-  );
+  Player.handle__WS_msg_Player__Connection__recv(g__ws_player);
+  Player.handle__WS_msg_Player__Sighting__recv(g__ws_player);
 }
 let g__ws_chat;
 function g__ws_chat__set() {
   g__ws_chat = WS__make("chat");
 
-  // WS_msg__recv(
-  //   g__ws_chat,
-  //   "WS_msg_Chat",
-  //   WS_msg_Chat_ID.Message,
-  //   (body) => {
-  //     console.log(body);
-  //   },
-  // );
+  //Chat.handle__WS_msg_Chat__Message__recv(g__ws_chat);
 }
 
 export async function g__connect_user() {

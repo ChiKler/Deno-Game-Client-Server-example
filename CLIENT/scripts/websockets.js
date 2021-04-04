@@ -6,17 +6,16 @@ export function WS__make(ws_name) {
   ));
 }
 
-export function WS_msg__send(ws, kind, id, body) {
-  ws.send(JSON.stringify({ kind, id, body }));
-}
-
 export function WS_msg__recv(ws, kind, id, callback) {
   ws.addEventListener("message", function (evt) {
     const msg = JSON.parse(evt.data);
 
     if ((msg.kind == kind) && (msg.id == id)) {
-      console.log(msg);
       callback(msg.body);
     }
   });
+}
+
+export function WS_msg__send(ws, kind, id, body) {
+  ws.send(JSON.stringify({ kind, id, body }));
 }

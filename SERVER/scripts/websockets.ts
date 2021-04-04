@@ -7,23 +7,6 @@ export interface WS_msg {
   body: object;
 }
 
-export async function WS_msg__send(
-  ws: WebSocket,
-  msg: WS_msg,
-): Promise<void> {
-  if (ws.isClosed) return;
-  try {
-    await ws.send(JSON.stringify(msg));
-  } catch (error) {
-    console.error(error);
-    try {
-      await ws.close();
-    } catch (error) {
-      console.error(error);
-    }
-  }
-}
-
 /**
  * 
  * SHOULD RECURSEVILY CHECK ALL THE PROPERTIES OF WS_msg__body__Ty (TO BE IMPLEMENTED)
@@ -64,5 +47,22 @@ export async function WS_msg__recv<WS_msg__body__Ty>(
     }
   } catch (err) {
     // console.error(err);
+  }
+}
+
+export async function WS_msg__send(
+  ws: WebSocket,
+  msg: WS_msg,
+): Promise<void> {
+  if (ws.isClosed) return;
+  try {
+    await ws.send(JSON.stringify(msg));
+  } catch (error) {
+    console.error(error);
+    try {
+      await ws.close();
+    } catch (error) {
+      console.error(error);
+    }
   }
 }

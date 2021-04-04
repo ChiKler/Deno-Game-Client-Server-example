@@ -218,6 +218,14 @@ async function g__server__handle_requests() {
         "../CLIENT/scripts/websockets.js",
       );
     } else if (
+      req.method === "GET" && req.url === "/CLIENT/scripts/websockets.js"
+    ) {
+      handle_req__GET__file(
+        req,
+        "text/javascript",
+        "../CLIENT/scripts/websockets.js",
+      );
+    } else if (
       req.method === "GET" && req.url === "/ENGINE-CLIENT/GameEntity.js"
     ) {
       handle_req__GET__file(
