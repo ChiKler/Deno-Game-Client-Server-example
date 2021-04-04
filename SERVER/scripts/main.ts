@@ -211,15 +211,15 @@ async function g__server__handle_requests() {
         "text/javascript",
         "../CLIENT/scripts/mod.js",
       );
-    } else if (req.method === "GET" && req.url === "/scripts/websockets.js") {
+    } else if (
+      req.method === "GET" && req.url === "/scripts/Player_Controller.js"
+    ) {
       handle_req__GET__file(
         req,
         "text/javascript",
-        "../CLIENT/scripts/websockets.js",
+        "../CLIENT/scripts/Player_Controller.js",
       );
-    } else if (
-      req.method === "GET" && req.url === "/CLIENT/scripts/websockets.js"
-    ) {
+    } else if (req.method === "GET" && req.url === "/scripts/websockets.js") {
       handle_req__GET__file(
         req,
         "text/javascript",

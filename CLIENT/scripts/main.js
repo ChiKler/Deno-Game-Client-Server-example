@@ -1,6 +1,6 @@
 import { GameMap, GameMap_ID, Player } from "../../ENGINE-CLIENT/mod.js";
 
-import { WS__make } from "./websockets.js";
+import { Player_Controller, WS__make } from "./mod.js";
 
 export const g__uuID = window.prompt("uuID", "Jane,John");
 
@@ -10,8 +10,8 @@ let g__ws_player;
 function g__ws_player__set() {
   g__ws_player = WS__make("player");
 
-  Player.handle__WS_msg_Player__Connection__recv(g__ws_player);
-  Player.handle__WS_msg_Player__Sighting__recv(g__ws_player);
+  Player_Controller.handle__WS_msg_Player__Connection__recv(g__ws_player);
+  Player_Controller.handle__WS_msg_Player__Sighting__recv(g__ws_player);
 }
 let g__ws_chat;
 function g__ws_chat__set() {
