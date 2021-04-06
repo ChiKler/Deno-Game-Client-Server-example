@@ -1,17 +1,17 @@
 // @ts-ignore
-import { Player } from "./mod.ts";
-
-// @ts-ignore
-import { sleep, time_stamp } from "../vendor/utility/mod.ts";
-// @ts-ignore
 import { Status } from "https://deno.land/std@0.92.0/http/http_status.ts";
 import {
   isWebSocketCloseEvent,
   WebSocket,
   // @ts-ignore
 } from "https://deno.land/std@0.92.0/ws/mod.ts";
+
+// @ts-ignore
+import { Player } from "./Player.ts";
 // @ts-ignore
 import { WS_msg_Player } from "./WS_msg_Player.ts";
+// @ts-ignore
+import { sleep, time_stamp } from "../vendor/utility/mod.ts";
 
 export enum GameMap_ID {
   Sandbox,

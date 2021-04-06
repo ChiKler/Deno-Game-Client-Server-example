@@ -1,5 +1,9 @@
 // @ts-ignore
-import { GameMap_ID, Player } from "./mod.ts";
+import { from_SERVER_obj_to_SERVER_msg__Player } from "./from_SERVER_obj_to_SERVER_msg.ts";
+// @ts-ignore
+import { GameMap_ID } from "./GameMap.ts";
+// @ts-ignore
+import { Player } from "./Player.ts";
 // @ts-ignore
 import { WS_msg__recv, WS_msg__send } from "../SERVER/scripts/websockets.ts";
 
@@ -19,7 +23,7 @@ export class WS_msg_Player {
       kind: "WS_msg_Player",
       id: WS_msg_Player_ID.Connection,
       body: {
-        p__Player__source: Player.from_SERVER_obj_to_SERVER_msg(
+        p__Player__source: from_SERVER_obj_to_SERVER_msg__Player(
           p__Player__source,
         ),
         p__GameMap_ID: p__GameMap_ID,
@@ -35,7 +39,7 @@ export class WS_msg_Player {
       kind: "WS_msg_Player",
       id: WS_msg_Player_ID.Sighting,
       body: {
-        p__Player__source: Player.from_SERVER_obj_to_SERVER_msg(
+        p__Player__source: from_SERVER_obj_to_SERVER_msg__Player(
           p__Player__target,
         ),
       },
@@ -50,7 +54,7 @@ export class WS_msg_Player {
       kind: "WS_msg_Player",
       id: WS_msg_Player_ID.Sighting,
       body: {
-        p__Player__source: Player.from_SERVER_obj_to_SERVER_msg(
+        p__Player__source: from_SERVER_obj_to_SERVER_msg__Player(
           p__Player__target,
         ),
       },
@@ -65,7 +69,7 @@ export class WS_msg_Player {
       kind: "WS_msg_Player",
       id: WS_msg_Player_ID.Sighting,
       body: {
-        p__Player__source: Player.from_SERVER_obj_to_SERVER_msg(
+        p__Player__source: from_SERVER_obj_to_SERVER_msg__Player(
           p__Player__target,
         ),
       },

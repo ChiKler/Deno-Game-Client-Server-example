@@ -1,13 +1,8 @@
 // @ts-ignore
-import { GameObject, Player } from "./mod.ts";
-
-// @ts-ignore
-import type { Player__SERVER_msg } from "../ENGINE-SERVER/Player.ts";
+import { GameObject } from "./mod.ts";
 
 // @ts-ignore
 import { Mutex } from "../vendor/utility/mod.ts";
-
-export type GameEntity__SERVER_msg = Player__SERVER_msg;
 
 export abstract class GameEntity {
   readonly eeID: number;
@@ -26,21 +21,5 @@ export abstract class GameEntity {
     GameEntity.eeID_count += amount;
     eeID_mutex__unlock();
     return (eeID_count__old);
-  }
-
-  static from_SERVER_obj_to_SERVER_msg(
-    p__GameEntity: GameEntity,
-  ): GameEntity__SERVER_msg {
-    let l__GameEntity__SERVER_msg: GameEntity__SERVER_msg;
-
-    if (p__GameEntity instanceof Player) {
-      l__GameEntity__SERVER_msg = Player.from_SERVER_obj_to_SERVER_msg(
-        p__GameEntity,
-      );
-    } else {
-      throw new TypeError();
-    }
-
-    return (l__GameEntity__SERVER_msg);
   }
 }

@@ -2,6 +2,9 @@
 export * from "./Character.ts";
 
 // @ts-ignore
+export * from "./from_SERVER_obj_to_SERVER_msg.ts";
+
+// @ts-ignore
 export * from "./GameEntity.ts";
 
 // @ts-ignore
