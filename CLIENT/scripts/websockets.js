@@ -1,6 +1,4 @@
-import { g__server_address, g__uuID } from "./main.js";
-
-export function WS__make(ws_name) {
+export function WS__make(g__server_address, g__uuID, ws_name) {
   return (new WebSocket(
     `ws://${g__server_address}/ws_${ws_name}__set?uuID=${g__uuID}`,
   ));

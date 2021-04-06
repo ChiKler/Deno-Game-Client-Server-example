@@ -23,9 +23,17 @@ export function g__Player__set(p__Player) {
 
 let g__ws_player;
 function g__ws_player__set() {
-  g__ws_player = WS__make("player");
+  g__ws_player = WS__make(g__server_address, g__uuID, "player");
 
-  WS_msg_Player.handle__WS_msg_Player__Connection__recv(g__ws_player);
+  WS_msg_Player.handle__WS_msg_Player__Connection__recv(
+    g__ws_player,
+    g__Player,
+    g__Player__set,
+    g__GameMap,
+    g__GameMap__set,
+    g__GameMap_ID,
+    g__GameMap_ID__set,
+  );
   WS_msg_Player.handle__WS_msg_Player__Sighting__recv(g__ws_player);
 }
 let g__ws_chat;

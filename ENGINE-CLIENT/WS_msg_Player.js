@@ -4,11 +4,6 @@ import {
   Player,
 } from "../../ENGINE-CLIENT/mod.js";
 
-import {
-  g__GameMap,
-  g__GameMap_ID__set,
-  g__Player__set,
-} from "../CLIENT/scripts/main.js";
 import { WS_msg__recv, WS_msg__send } from "../CLIENT/scripts/websockets.js";
 
 export var WS_msg_Player_ID;
@@ -22,6 +17,12 @@ export var WS_msg_Player_ID;
 export class WS_msg_Player {
   static async handle__WS_msg_Player__Connection__recv(
     g__ws_player,
+    g__Player,
+    g__Player__set,
+    g__GameMap,
+    g__GameMap__set,
+    g__GameMap_ID,
+    g__GameMap_ID__set,
   ) {
     WS_msg__recv(
       g__ws_player,
