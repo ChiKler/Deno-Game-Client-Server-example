@@ -17,8 +17,8 @@ export /*abstract */ class GameObject {
   }
 
   draw(g__cvs, g__ctx, g__Player) {
-    const adjustX = (g__Player.m__GameObject).img.width / 2;
-    const adjustY = (g__Player.m__GameObject).img.height / 2;
+    const adjustX = (g__Player.get().m__GameObject).img.width / 2;
+    const adjustY = (g__Player.get().m__GameObject).img.height / 2;
 
     g__ctx.save();
 

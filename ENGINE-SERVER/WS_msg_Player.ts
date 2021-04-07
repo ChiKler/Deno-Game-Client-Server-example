@@ -1,5 +1,10 @@
 // @ts-ignore
-import { from_SERVER_obj_to_SERVER_msg__Player } from "./from_SERVER_obj_to_SERVER_msg.ts";
+import {
+  from_SERVER_obj_to_SERVER_msg__GameEntity,
+  from_SERVER_obj_to_SERVER_msg__Player,
+} from "./from_SERVER_obj_to_SERVER_msg.ts";
+// @ts-ignore
+import { GameEntity } from "./GameEntity.ts";
 // @ts-ignore
 import { GameMap_ID } from "./GameMap.ts";
 // @ts-ignore
@@ -51,45 +56,45 @@ export class WS_msg_Player {
   }
 
   static async handle__WS_msg_Player__Sighting__send(
-    p__Player__source: Player,
+    p__GameEntity__source: GameEntity,
     p__Player__target: Player,
   ): Promise<void> {
     WS_msg__send(p__Player__target.ws_player, {
       kind: "WS_msg_Player",
       id: WS_msg_Player_ID.Sighting,
       body: {
-        p__Player__source: from_SERVER_obj_to_SERVER_msg__Player(
-          p__Player__source,
+        p__GameEntity__source: from_SERVER_obj_to_SERVER_msg__GameEntity(
+          p__GameEntity__source,
         ),
       },
     });
   }
 
   static async handle__WS_msg_Player__Vanishing__send(
-    p__Player__source: Player,
+    p__GameEntity__source: GameEntity,
     p__Player__target: Player,
   ): Promise<void> {
     WS_msg__send(p__Player__target.ws_player, {
       kind: "WS_msg_Player",
       id: WS_msg_Player_ID.Sighting,
       body: {
-        p__Player__source: from_SERVER_obj_to_SERVER_msg__Player(
-          p__Player__source,
+        p__GameEntity__source: from_SERVER_obj_to_SERVER_msg__GameEntity(
+          p__GameEntity__source,
         ),
       },
     });
   }
 
   static async handle__WS_msg_Player__Takedown__send(
-    p__Player__source: Player,
+    p__GameEntity__source: GameEntity,
     p__Player__target: Player,
   ): Promise<void> {
     WS_msg__send(p__Player__target.ws_player, {
       kind: "WS_msg_Player",
       id: WS_msg_Player_ID.Sighting,
       body: {
-        p__Player__source: from_SERVER_obj_to_SERVER_msg__Player(
-          p__Player__source,
+        p__GameEntity__source: from_SERVER_obj_to_SERVER_msg__GameEntity(
+          p__GameEntity__source,
         ),
       },
     });

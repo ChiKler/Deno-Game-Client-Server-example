@@ -81,8 +81,6 @@ export class GameMap {
 
   readonly m__GameMap_ID: GameMap_ID;
 
-  #isRunning: boolean;
-
   #m__Players_Map: Map<number, Player>;
 
   // @ts-ignore
@@ -99,8 +97,6 @@ export class GameMap {
   private constructor(p__GameMap_ID: GameMap_ID) {
     this.m__GameMap_ID = p__GameMap_ID;
 
-    this.#isRunning = false;
-
     this.#m__Players_Map = new Map<number, Player>();
 
     this.#m__Players_BufferIn = new GameMap.Players_BufferIn();
@@ -112,7 +108,7 @@ export class GameMap {
       GameMap.PetitionToDisconnectPlayer
     >();
   }
-  private static async open(
+  private static async g__GameMaps__open(
     g__GameMaps: Map<GameMap_ID, GameMap>,
     p__GameMap_ID: GameMap_ID,
   ): Promise<void> {
@@ -142,15 +138,14 @@ export class GameMap {
       g__GameMaps.set(p__GameMap_ID, new GameMap(p__GameMap_ID));
     }
   }
-  private static async close(
+  private static async g__GameMaps__close(
     g__GameMaps: Map<GameMap_ID, GameMap>,
     p__GameMap_ID: GameMap_ID,
   ): Promise<void> {
     if (g__GameMaps.get(p__GameMap_ID) == undefined) return;
     const l__GameMap = g__GameMaps.get(p__GameMap_ID)!;
-    if (l__GameMap.#isRunning) {
-      await l__GameMap.update__stop();
-    }
+
+    await l__GameMap.update__stop();
 
     await sleep(8000); // wait for all the players at g__GameMaps.get(p__GameMap_ID).#m__Players_BufferOut to be disconnected // e.g. a player may still be waiting to receive rewards from an npc they had aggroed
   }
@@ -244,6 +239,7 @@ export class GameMap {
     }
   };
 
+  #update__isLoopRunning = false;
   private async update() {
     const begin_ms = time_stamp();
     const min_ms = 20;
@@ -341,23 +337,23 @@ export class GameMap {
     }
   }
   private async update__start() {
-    if (this.#isRunning) {
+    if (this.#update__isLoopRunning) {
       return;
     } else {
-      this.#isRunning = true;
+      this.#update__isLoopRunning = true;
     }
 
-    while (this.#isRunning) {
+    while (this.#update__isLoopRunning) {
       await this.update();
     }
   }
   private async update__stop() {
-    if (!this.#isRunning) {
+    if (!this.#update__isLoopRunning) {
       return;
     } else {
       await sleep(8000); // wait for all the players to be safely moved into this.#m__Players_BufferOut // e.g. a player is still in combat
 
-      this.#isRunning = false;
+      this.#update__isLoopRunning = false;
     }
   }
 
@@ -423,7 +419,7 @@ export class GameMap {
     };
 
     await Promise.all([
-      GameMap.open(g__GameMaps, GameMap_ID.Sandbox),
+      GameMap.g__GameMaps__open(g__GameMaps, GameMap_ID.Sandbox),
     ]);
 
     await Promise.all([

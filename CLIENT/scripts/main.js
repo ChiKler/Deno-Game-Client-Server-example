@@ -1,5 +1,6 @@
 import { GameMap, GameMap_ID, Player } from "../../ENGINE-CLIENT/mod.js";
 
+import { g__ctx, g__cvs } from "./canvas.js";
 import { WS__make } from "./websockets.js";
 import { WS_msg_Player } from "../../ENGINE-CLIENT/WS_msg_Player.js";
 
@@ -7,35 +8,58 @@ export const g__uuID = window.prompt("uuID", "Jane,John");
 
 export const g__server_address = "localhost:3000";
 
-export let g__GameMap;
-export function g__GameMap__set(p__GameMap) {
-  g__GameMap = p__GameMap;
-}
+export let g__GameMap = {
+  m__instance: undefined,
+  get: function () {
+    return this.m__instance;
+  },
+  set: function (p__instance) {
+    this.m__instance = p__instance;
+  },
+};
+globalThis.g__GameMap = g__GameMap;
 
-export let g__Player;
-export function g__Player__set(p__Player) {
-  g__Player = p__Player;
-}
+export let g__Player = {
+  m__instance: undefined,
+  get: function () {
+    return this.m__instance;
+  },
+  set: function (p__instance) {
+    this.m__instance = p__instance;
+  },
+};
+globalThis.g__Player = g__Player;
 
 let g__ws_player;
-function g__ws_player__set() {
+async function g__ws_player__set() {
   g__ws_player = WS__make(g__server_address, g__uuID, "player");
 
-  WS_msg_Player.handle__WS_msg_Player__Disconnection__recv(
+  await WS_msg_Player.handle__WS_msg_Player__Disconnection__recv(
+    g__ws_player,
+    g__cvs,
+    g__ctx,
+    g__GameMap,
+    g__Player,
+  );
+  await WS_msg_Player.handle__WS_msg_Player__Connection__recv(
+    g__ws_player,
+    g__cvs,
+    g__ctx,
+    g__GameMap,
+    g__Player,
+  );
+  await WS_msg_Player.handle__WS_msg_Player__Sighting__recv(
     g__ws_player,
     g__GameMap,
-    g__GameMap__set,
-    g__Player,
-    g__Player__set,
   );
-  WS_msg_Player.handle__WS_msg_Player__Connection__recv(
+  await WS_msg_Player.handle__WS_msg_Player__Vanishing__recv(
     g__ws_player,
     g__GameMap,
-    g__GameMap__set,
-    g__Player,
-    g__Player__set,
   );
-  WS_msg_Player.handle__WS_msg_Player__Sighting__recv(g__ws_player);
+  await WS_msg_Player.handle__WS_msg_Player__Takedown__recv(
+    g__ws_player,
+    g__GameMap,
+  );
 }
 let g__ws_chat;
 function g__ws_chat__set() {
@@ -50,7 +74,8 @@ export async function g__connect_user() {
   ));
 }
 export async function g__connect_player() {
-  g__ws_player__set();
+  await g__ws_player__set();
+
   return (await fetch(
     `http://${g__server_address}/connect_player?uuID=${g__uuID}`,
   ));

@@ -10,74 +10,118 @@ export var GameMap_ID;
 export class GameMap {
   #m__GameMap_ID;
 
-  #isRunning;
-
   #m__Players_Map;
 
   /*private */ constructor(p__GameMap_ID) {
     this.#m__GameMap_ID = p__GameMap_ID;
 
-    this.#isRunning = false;
-
     this.#m__Players_Map = new Map();
   }
 
-  /*private */ render(g__cvs, g__ctx, g__Player) {
-    if (!this.#isRunning) return;
+  connect__Player(p__Player) {
+    this.#m__Players_Map.set(p__Player.eeID, p__Player);
+  }
+  disconnect__Player(p__Player) {
+    this.#m__Players_Map.delete(p__Player.eeID);
+  }
 
+  #render__requestAnimationFrame__ReVa = undefined;
+  #render(g__cvs, g__ctx, g__Player) {
     {
       g__ctx.setTransform(1, 0, 0, 1, 0, 0);
 
       g__ctx.clearRect(0, 0, g__cvs.width, g__cvs.height);
 
-      const camX = -g__Player.m__GameObject.posX + g__cvs.width / 2;
-      const camY = -g__Player.m__GameObject.posY + g__cvs.height / 2;
+      const camX = -g__Player.get().m__GameObject.posX + g__cvs.width / 2;
+      const camY = -g__Player.get().m__GameObject.posY + g__cvs.height / 2;
 
       g__ctx.translate(camX, camY);
     }
 
     {
-      g__Player.m__GameObject.draw(g__cvs, g__ctx, g__Player);
+      g__Player.get().m__GameObject.draw(g__cvs, g__ctx, g__Player);
 
       this.#m__Players_Map.forEach((l__Player) => {
         l__Player.m__GameObject.draw(g__cvs, g__ctx, g__Player);
       });
     }
 
-    window.requestAnimationFrame(this.render);
+    this.#render__requestAnimationFrame__ReVa = window.requestAnimationFrame(
+      () => {
+        this.#render(g__cvs, g__ctx, g__Player);
+      },
+    );
   }
-  /*private */ async update() {
-  }
-  /*private */ async update__start() {
-    if (this.#isRunning) {
-      return;
-    } else {
-      this.#isRunning = true;
+
+  #update__isLoopRunning = false;
+  #update__isLoopCompleted = true;
+  /*private*/ async update() {
+    this.#update__isLoopCompleted = false;
+
+    const begin_ms = time_stamp();
+    const min_ms = 20;
+    const max_ms = 40;
+
+    const elapsed_ms = () => {
+      return (time_stamp() - begin_ms);
+    };
+    const delta_time = () => {
+      return (elapsed_ms() * 0.001);
+    };
+
+    if (elapsed_ms() > max_ms) {
+      console.warn(
+        `The GameMap with ID ${this.m__GameMap_ID} took ${(elapsed_ms() -
+          max_ms)}ms longer updating than it should have.`,
+      );
+    } else if (elapsed_ms() < min_ms) {
+      const sleep_ms = (min_ms - elapsed_ms());
+      if (sleep_ms > 0) {
+        await sleep(sleep_ms);
+      }
     }
 
-    window.requestAnimationFrame(this.render);
+    this.#update__isLoopCompleted = true;
+  }
+  /*private*/ async update__start(g__cvs, g__ctx, g__Player) {
+    if (this.#update__isLoopRunning) {
+      return;
+    } else {
+      this.#update__isLoopRunning = true;
+    }
 
-    while (this.#isRunning) {
+    this.#render__requestAnimationFrame__ReVa = window.requestAnimationFrame(
+      () => {
+        this.#render(g__cvs, g__ctx, g__Player);
+      },
+    );
+
+    while (this.#update__isLoopRunning) {
       await this.update();
     }
   }
-  /*private */ update__stop() {
-    if (!this.#isRunning) {
+  /*private*/ async update__stop() {
+    if (!this.#update__isLoopRunning) {
       return;
     } else {
-      this.#isRunning = false;
+      this.#update__isLoopRunning = false;
     }
+
+    window.cancelAnimationFrame(this.#render__requestAnimationFrame__ReVa);
+
+    while (!this.#update__isLoopCompleted) await sleep(20);
   }
 
   /*private*/ static g__GameMap__isOpened = false;
   /*private*/ static g__GameMap__isOpened__mutex = new Mutex();
 
   /*private */ static async g__GameMap__open(
+    g__cvs,
+    g__ctx,
     g__GameMap,
-    g__GameMap__set,
     g__Player,
-    g__Player__set,
     p__GameMap_ID,
+    p__Player,
   ) {
     const l__GameMap__g__GameMap__isOpened__mutex__unlock = await GameMap
       .g__GameMap__isOpened__mutex.lock();
@@ -87,9 +131,14 @@ export class GameMap {
     } else {
       console.log(`Opening the GameMap with GameMap_ID ${p__GameMap_ID}`);
 
-      while (g__Player == undefined) await sleep(20);
+      g__GameMap.set(new GameMap(p__GameMap_ID));
 
-      g__GameMap__set(new GameMap(p__GameMap_ID));
+      if (p__Player != undefined) {
+        g__Player.set(p__Player);
+        g__GameMap.get().connect__Player(g__Player.get());
+      }
+
+      g__GameMap.get().update__start(g__cvs, g__ctx, g__Player);
 
       GameMap.g__GameMap__isOpened = true;
 
@@ -97,29 +146,29 @@ export class GameMap {
     }
   }
   /*private */ static async g__GameMap__close(
+    g__cvs,
+    g__ctx,
     g__GameMap,
-    g__GameMap__set,
     g__Player,
-    g__Player__set,
     p__GameMap_ID,
   ) {
     const l__GameMap__g__GameMap__isOpened__mutex__unlock = await GameMap
       .g__GameMap__isOpened__mutex.lock();
     if (GameMap.g__GameMap__isOpened) {
       console.log(
-        `Closing the GameMap with GameMap_ID ${g__GameMap.#m__GameMap_ID}`,
+        `Closing the GameMap with GameMap_ID ${g__GameMap__get().#m__GameMap_ID}`,
       );
 
-      // AWAIT FOR THE GAMEMAP
-      // UPDATE TO STOP RUNNING
-      g__GameMap__set(undefined);
+      await g__GameMap.get().update__stop();
+
+      g__GameMap.set(undefined);
 
       if (p__GameMap_ID != undefined) {
         GameMap.open(
+          g__cvs,
+          g__ctx,
           g__GameMap,
-          g__GameMap__set,
           g__Player,
-          g__Player__set,
           p__GameMap_ID,
         );
       }

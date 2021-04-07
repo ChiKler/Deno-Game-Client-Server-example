@@ -1,4 +1,5 @@
 import {
+  from_CLIENT_msg_to_CLIENT_obj__GameEntity,
   from_CLIENT_msg_to_CLIENT_obj__Player,
   GameMap,
   Player,
@@ -18,26 +19,23 @@ export var WS_msg_Player_ID;
 export class WS_msg_Player {
   static async handle__WS_msg_Player__Connection__recv(
     g__ws_player,
+    g__cvs,
+    g__ctx,
     g__GameMap,
-    g__GameMap__set,
     g__Player,
-    g__Player__set,
   ) {
     WS_msg__recv(
       g__ws_player,
       "WS_msg_Player",
       WS_msg_Player_ID.Connection,
       (msg__body) => {
-        g__Player__set(undefined);
         GameMap.g__GameMap__open(
+          g__cvs,
+          g__ctx,
           g__GameMap,
-          g__GameMap__set,
           g__Player,
-          g__Player__set,
           msg__body.p__GameMap_ID,
-        );
-        g__Player__set(
-          from_CLIENT_msg_to_CLIENT_obj__Player(msg__body.p__Player),
+          from_CLIENT_msg_to_CLIENT_obj__Player(msg__body.p__Player__source),
         );
       },
     );
@@ -45,10 +43,10 @@ export class WS_msg_Player {
 
   static async handle__WS_msg_Player__Disconnection__recv(
     g__ws_player,
+    g__cvs,
+    g__ctx,
     g__GameMap,
-    g__GameMap__set,
     g__Player,
-    g__Player__set,
   ) {
     WS_msg__recv(
       g__ws_player,
@@ -56,10 +54,10 @@ export class WS_msg_Player {
       WS_msg_Player_ID.Disconnection,
       (msg__body) => {
         GameMap.g__GameMap__close(
+          g__cvs,
+          g__ctx,
           g__GameMap,
-          g__GameMap__set,
           g__Player,
-          g__Player__set,
           msg__body.p__GameMap_ID,
         );
       },
@@ -68,44 +66,49 @@ export class WS_msg_Player {
 
   static async handle__WS_msg_Player__Sighting__recv(
     g__ws_player,
+    g__GameMap,
   ) {
     WS_msg__recv(
       g__ws_player,
       "WS_msg_Player",
       WS_msg_Player_ID.Sighting,
       (msg__body) => {
-        console.log(
-          {
-            kind: "WS_msg_Player",
-            id: WS_msg_Player_ID.Sighting,
-            msg__body,
-          },
+        const l__GameEntity__source = from_CLIENT_msg_to_CLIENT_obj__GameEntity(
+          msg__body.p__GameEntity__source,
         );
+        if (l__GameEntity__source instanceof Player) {
+          g__GameMap.get().connect__Player(l__GameEntity__source);
+        } else {
+          throw new TypeError();
+        }
       },
     );
   }
 
   static async handle__WS_msg_Player__Vanishing__recv(
     g__ws_player,
+    g__GameMap,
   ) {
     WS_msg__recv(
       g__ws_player,
       "WS_msg_Player",
       WS_msg_Player_ID.Vanishing,
       (msg__body) => {
-        console.log(
-          {
-            kind: "WS_msg_Player",
-            id: WS_msg_Player_ID.Vanishing,
-            msg__body,
-          },
+        const l__GameEntity__source = from_CLIENT_msg_to_CLIENT_obj__GameEntity(
+          msg__body.p__GameEntity__source,
         );
+        if (l__GameEntity__source instanceof Player) {
+          g__GameMap.get().disconnect__Player(l__GameEntity__source);
+        } else {
+          throw new TypeError();
+        }
       },
     );
   }
 
   static async handle__WS_msg_Player__Takedown__recv(
     g__ws_player,
+    g__GameMap__get,
   ) {
     WS_msg__recv(
       g__ws_player,

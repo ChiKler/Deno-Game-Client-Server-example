@@ -177,6 +177,12 @@ async function g__server__handle_requests() {
         "text/css",
         "../CLIENT/css/main.css",
       );
+    } else if (req.method === "GET" && req.url === "/css/canvas.css") {
+      handle_req__GET__file(
+        req,
+        "text/css",
+        "../CLIENT/css/canvas.css",
+      );
     } else if (
       req.method === "GET" && req.url === "/API/GameObject_Character_Red.png"
     ) {
