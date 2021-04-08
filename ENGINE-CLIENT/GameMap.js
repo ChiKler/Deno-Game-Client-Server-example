@@ -39,11 +39,11 @@ export class GameMap {
     }
 
     {
-      g__Player.get().m__GameObject.draw(g__cvs, g__ctx, g__Player);
-
       this.#m__Players_Map.forEach((l__Player) => {
         l__Player.m__GameObject.draw(g__cvs, g__ctx, g__Player);
       });
+
+      g__Player.get().m__GameObject.draw(g__cvs, g__ctx, g__Player);
     }
 
     this.#render__requestAnimationFrame__ReVa = window.requestAnimationFrame(
@@ -129,8 +129,6 @@ export class GameMap {
       l__GameMap__g__GameMap__isOpened__mutex__unlock();
       return;
     } else {
-      console.log(`Opening the GameMap with GameMap_ID ${p__GameMap_ID}`);
-
       g__GameMap.set(new GameMap(p__GameMap_ID));
 
       if (p__Player != undefined) {
@@ -155,10 +153,6 @@ export class GameMap {
     const l__GameMap__g__GameMap__isOpened__mutex__unlock = await GameMap
       .g__GameMap__isOpened__mutex.lock();
     if (GameMap.g__GameMap__isOpened) {
-      console.log(
-        `Closing the GameMap with GameMap_ID ${g__GameMap__get().#m__GameMap_ID}`,
-      );
-
       await g__GameMap.get().update__stop();
 
       g__GameMap.set(undefined);

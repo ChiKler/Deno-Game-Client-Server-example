@@ -7,7 +7,7 @@ import { GameObject } from "./GameObject.ts";
 // @ts-ignore
 import { Player } from "./Player.ts";
 
-export interface Character__SERVER_msg {
+export interface SERVER_msg__Character {
   type: string;
   args: {
     posX: number;
@@ -20,10 +20,10 @@ export interface Character__SERVER_msg {
 
 export function from_SERVER_obj_to_SERVER_msg__Character(
   p__Character: Character,
-): Character__SERVER_msg {
-  let l__Character__SERVER_msg: Character__SERVER_msg;
+): SERVER_msg__Character {
+  let l__SERVER_msg__Character: SERVER_msg__Character;
 
-  l__Character__SERVER_msg = {
+  l__SERVER_msg__Character = {
     type: "Character",
     args: {
       // @ts-ignore
@@ -37,41 +37,41 @@ export function from_SERVER_obj_to_SERVER_msg__Character(
     },
   };
 
-  return (l__Character__SERVER_msg);
+  return (l__SERVER_msg__Character);
 }
 
-export type GameObject__SERVER_msg = Character__SERVER_msg;
+export type SERVER_msg__GameObject = SERVER_msg__Character;
 
 export function from_SERVER_obj_to_SERVER_msg__GameObject(
   p__GameObject: GameObject,
-): GameObject__SERVER_msg {
-  let l__GameObject__SERVER_msg: GameObject__SERVER_msg;
+): SERVER_msg__GameObject {
+  let l__SERVER_msg__GameObject: SERVER_msg__GameObject;
 
   if (p__GameObject instanceof Character) {
-    l__GameObject__SERVER_msg = from_SERVER_obj_to_SERVER_msg__Character(
+    l__SERVER_msg__GameObject = from_SERVER_obj_to_SERVER_msg__Character(
       p__GameObject,
     );
   } else {
     throw new TypeError();
   }
 
-  return (l__GameObject__SERVER_msg);
+  return (l__SERVER_msg__GameObject);
 }
 
-export interface Player__SERVER_msg {
+export interface SERVER_msg__Player {
   type: string;
   args: {
     eeID: number;
-    GameObject: GameObject__SERVER_msg;
+    GameObject: SERVER_msg__GameObject;
   };
 }
 
 export function from_SERVER_obj_to_SERVER_msg__Player(
   p__Player: Player,
-): Player__SERVER_msg {
-  let l__Player__SERVER_msg: Player__SERVER_msg;
+): SERVER_msg__Player {
+  let l__SERVER_msg__Player: SERVER_msg__Player;
 
-  l__Player__SERVER_msg = {
+  l__SERVER_msg__Player = {
     type: "Player",
     args: {
       // @ts-ignore
@@ -83,23 +83,23 @@ export function from_SERVER_obj_to_SERVER_msg__Player(
     },
   };
 
-  return (l__Player__SERVER_msg);
+  return (l__SERVER_msg__Player);
 }
 
-export type GameEntity__SERVER_msg = Player__SERVER_msg;
+export type SERVER_msg__GameEntity = SERVER_msg__Player;
 
 export function from_SERVER_obj_to_SERVER_msg__GameEntity(
   p__GameEntity: GameEntity,
-): GameEntity__SERVER_msg {
-  let l__GameEntity__SERVER_msg: GameEntity__SERVER_msg;
+): SERVER_msg__GameEntity {
+  let l__SERVER_msg__GameEntity: SERVER_msg__GameEntity;
 
   if (p__GameEntity instanceof Player) {
-    l__GameEntity__SERVER_msg = from_SERVER_obj_to_SERVER_msg__Player(
+    l__SERVER_msg__GameEntity = from_SERVER_obj_to_SERVER_msg__Player(
       p__GameEntity,
     );
   } else {
     throw new TypeError();
   }
 
-  return (l__GameEntity__SERVER_msg);
+  return (l__SERVER_msg__GameEntity);
 }

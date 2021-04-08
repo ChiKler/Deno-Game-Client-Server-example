@@ -34,8 +34,8 @@ export class WS_msg_Player {
           g__ctx,
           g__GameMap,
           g__Player,
-          msg__body.p__GameMap_ID,
-          from_CLIENT_msg_to_CLIENT_obj__Player(msg__body.p__Player__source),
+          msg__body.m__GameMap_ID,
+          from_CLIENT_msg_to_CLIENT_obj__Player(msg__body.m__Player__source),
         );
       },
     );
@@ -58,7 +58,7 @@ export class WS_msg_Player {
           g__ctx,
           g__GameMap,
           g__Player,
-          msg__body.p__GameMap_ID,
+          msg__body.m__GameMap_ID,
         );
       },
     );
@@ -74,7 +74,7 @@ export class WS_msg_Player {
       WS_msg_Player_ID.Sighting,
       (msg__body) => {
         const l__GameEntity__source = from_CLIENT_msg_to_CLIENT_obj__GameEntity(
-          msg__body.p__GameEntity__source,
+          msg__body.m__GameEntity__source,
         );
         if (l__GameEntity__source instanceof Player) {
           g__GameMap.get().connect__Player(l__GameEntity__source);
@@ -95,7 +95,7 @@ export class WS_msg_Player {
       WS_msg_Player_ID.Vanishing,
       (msg__body) => {
         const l__GameEntity__source = from_CLIENT_msg_to_CLIENT_obj__GameEntity(
-          msg__body.p__GameEntity__source,
+          msg__body.m__GameEntity__source,
         );
         if (l__GameEntity__source instanceof Player) {
           g__GameMap.get().disconnect__Player(l__GameEntity__source);
