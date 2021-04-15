@@ -178,11 +178,12 @@ export class User {
             user!.#ws_player!,
           );
 
-          const l__GameMap__connect_player__ReVa = GameMap.connect__Player(
-            g__GameMaps,
-            p__GameMap_ID,
-            user!.#player!,
-          );
+          const l__GameMap__connect_player__ReVa = await GameMap
+            .connect__Player(
+              g__GameMaps,
+              p__GameMap_ID,
+              user!.#player!,
+            );
 
           if (l__GameMap__connect_player__ReVa.status == Status.OK) {
             l__GameMap.handle_socket_messages(
