@@ -42,7 +42,7 @@ export class User {
     this.#isConnected__mutex = new Mutex();
   }
 
-  static async connect_user(
+  static async connect_User(
     g__Users: Map<string, User>,
     uuID: string,
   ): Promise<{
@@ -122,7 +122,7 @@ export class User {
       });
     }
   }
-  static async connect_player(
+  static async connect_Player(
     g__GameMaps: Map<GameMap__ID, GameMap>,
     p__GameMap__ID: GameMap__ID,
     g__Users: Map<string, User>,
@@ -188,15 +188,16 @@ export class User {
             },
           );
 
-          const l__GameMap__connect_player__ReVa = await GameMap
-            .connect__Player(
+          const l__GameMap__connect_Player__ReVa = await GameMap
+            .connect_Player(
               g__GameMaps,
               p__GameMap__ID,
               user!.#player!,
             );
 
-          if (l__GameMap__connect_player__ReVa.status == Status.OK) {
-            l__GameMap.handle_socket_messages(
+          if (l__GameMap__connect_Player__ReVa.status == Status.OK) {
+            l__GameMap.handle_WS_messages(
+              g__GameMaps,
               user!.#player!,
               user!.#ws_player!,
             );
@@ -204,13 +205,14 @@ export class User {
 
           user__isConnected__mutex__unlock();
           return ({
-            status: l__GameMap__connect_player__ReVa.status,
-            statusText: l__GameMap__connect_player__ReVa.statusText,
+            status: l__GameMap__connect_Player__ReVa.status,
+            statusText: l__GameMap__connect_Player__ReVa.statusText,
           });
         } else {
           user!.#player!.ws_player = user!.#ws_player!;
 
-          l__GameMap.handle_socket_messages(
+          l__GameMap.handle_WS_messages(
+            g__GameMaps,
             user!.#player!,
             user!.#ws_player!,
           );
@@ -226,7 +228,7 @@ export class User {
     }
   }
 
-  static async disconnect_player(
+  static async disconnect_Player(
     g__GameMaps: Map<GameMap__ID, GameMap>,
     g__Users: Map<string, User>,
     uuID: string,
@@ -264,21 +266,21 @@ export class User {
             `The Player of the User with uuID ${uuID} wasn't connected.`,
         });
       } else {
-        const l__GameMap__disconnect_player__ReVa = await GameMap
-          .disconnect__Player(
+        const l__GameMap__disconnect_Player__ReVa = await GameMap
+          .disconnect_Player(
             g__GameMaps,
             user!.#player!.eeID,
           );
 
         user__isConnected__mutex__unlock();
         return ({
-          status: l__GameMap__disconnect_player__ReVa.status,
-          statusText: l__GameMap__disconnect_player__ReVa.statusText,
+          status: l__GameMap__disconnect_Player__ReVa.status,
+          statusText: l__GameMap__disconnect_Player__ReVa.statusText,
         });
       }
     }
   }
-  static async disconnect_user(
+  static async disconnect_User(
     g__GameMaps: Map<GameMap__ID, GameMap>,
     g__Users: Map<string, User>,
     uuID: string,
@@ -310,7 +312,7 @@ export class User {
         });
       } else {
         user__isConnected__mutex__unlock();
-        const l__User__disconnect_player__ReVa = await User.disconnect_player(
+        const l__User__disconnect_Player__ReVa = await User.disconnect_Player(
           g__GameMaps,
           g__Users,
           uuID,
@@ -319,8 +321,8 @@ export class User {
           .lock();
 
         if (
-          (l__User__disconnect_player__ReVa.status == Status.OK) ||
-          (l__User__disconnect_player__ReVa.status == Status.Conflict)
+          (l__User__disconnect_Player__ReVa.status == Status.OK) ||
+          (l__User__disconnect_Player__ReVa.status == Status.Conflict)
         ) {
           g__Users.delete(uuID);
           user__isConnected__mutex__unlock();
@@ -331,8 +333,8 @@ export class User {
         } else {
           user__isConnected__mutex__unlock();
           return ({
-            status: l__User__disconnect_player__ReVa.status,
-            statusText: l__User__disconnect_player__ReVa.statusText,
+            status: l__User__disconnect_Player__ReVa.status,
+            statusText: l__User__disconnect_Player__ReVa.statusText,
           });
         }
       }

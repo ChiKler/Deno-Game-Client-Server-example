@@ -70,22 +70,38 @@ export class GameEntityEvent__Buffer_In {
 function GameEntityEvent__check_props<
   GameEntityEvent__Args__Ty extends GameEntityEvent__Args,
 >(
-  obj: any,
+  obj: object,
   p__GameEntityEvent__Args__Ty__check_props: (
-    obj: any,
+    obj: object,
   ) => obj is GameEntityEvent__Args__Ty,
 ): obj is GameEntityEvent<GameEntityEvent__Args__Ty> {
   return ((Object.keys(obj).length == 2) && (obj.hasOwnProperty("id")) &&
-    (typeof obj.id == "number") && (obj.hasOwnProperty("data")) &&
-    (typeof obj.data == "object") && (Object.keys(obj.data).length == 2) &&
-    (obj.data.hasOwnProperty("info")) && (typeof obj.data.info == "object") &&
+    // @ts-ignore
+    ((typeof obj.id) == "number") && (obj.hasOwnProperty("data")) &&
+    // @ts-ignore
+    ((obj.data != null) && ((typeof obj.data) == "object")) &&
+    // @ts-ignore
+    (Object.keys(obj.data).length == 2) &&
+    // @ts-ignore
+    (obj.data.hasOwnProperty("info")) &&
+    // @ts-ignore
+    ((obj.data.info != null) && ((typeof obj.data.info) == "object")) &&
+    // @ts-ignore
     (Object.keys(obj.data.info).length == 2) &&
+    // @ts-ignore
     (obj.data.info.hasOwnProperty("start")) &&
-    (typeof obj.data.info.start == "boolean") &&
+    // @ts-ignore
+    ((typeof obj.data.info.start) == "boolean") &&
+    // @ts-ignore
     (obj.data.info.hasOwnProperty("pause")) &&
-    (typeof obj.data.info.pause == "boolean") &&
-    (obj.data.hasOwnProperty("args")) && (typeof obj.data.args == "object") &&
-    p__GameEntityEvent__Args__Ty__check_props(obj.args));
+    // @ts-ignore
+    ((typeof obj.data.info.pause) == "boolean") &&
+    // @ts-ignore
+    (obj.data.hasOwnProperty("args")) &&
+    // @ts-ignore
+    ((obj.data.args != null) && ((typeof obj.data.args) == "object")) &&
+    // @ts-ignore
+    p__GameEntityEvent__Args__Ty__check_props(obj.data.args));
 }
 
 /**
@@ -99,11 +115,11 @@ export function GameEntityEvent__handle_fn(
   p__GameEntityEvent__handle_fn__condt__begin: (
     args: GameEntityEvent__Args,
     delta_time: number,
-  ) => boolean,
+  ) => { success: boolean; status: number },
   p__GameEntityEvent__handle_fn__condt__close: (
     args: GameEntityEvent__Args,
     delta_time: number,
-  ) => boolean,
+  ) => { success: boolean; status: number },
   p__GameEntityEvent__handle_fn__logic: (
     args: GameEntityEvent__Args,
     delta_time: number,
@@ -113,13 +129,18 @@ export function GameEntityEvent__handle_fn(
   let l__ReVa: (GameEntityEvent__ReTy | null);
 
   if (!p__GameEntityEvent__Data.info.start) {
-    if (
+    const l__p__GameEntityEvent__handle_fn__condt__close__ReVa =
       p__GameEntityEvent__handle_fn__condt__close(
         p__GameEntityEvent__Data.args,
         delta_time,
-      )
+      );
+
+    if (
+      l__p__GameEntityEvent__handle_fn__condt__close__ReVa.success
     ) {
       l__ReVa = null;
+
+      // send info "l__p__GameEntityEvent__handle_fn__condt__close__ReVa.status" to the respective GameEntity
     } else {
       l__ReVa = p__GameEntityEvent__handle_fn__logic(
         p__GameEntityEvent__Data.args,
@@ -127,27 +148,37 @@ export function GameEntityEvent__handle_fn(
       );
     }
   } else if (!p__GameEntityEvent__Data.info.pause) {
-    if (
+    const l__p__GameEntityEvent__handle_fn__condt__begin__ReVa =
       p__GameEntityEvent__handle_fn__condt__begin(
         p__GameEntityEvent__Data.args,
         delta_time,
-      )
+      );
+
+    if (
+      l__p__GameEntityEvent__handle_fn__condt__begin__ReVa.success
     ) {
       l__ReVa = p__GameEntityEvent__handle_fn__logic(
         p__GameEntityEvent__Data.args,
         delta_time,
       );
+
+      // send info "l__p__GameEntityEvent__handle_fn__condt__begin__ReVa.status" to the respective GameEntity
     } else {
       l__ReVa = null;
     }
   } else {
-    if (
+    const l__p__GameEntityEvent__handle_fn__condt__close__ReVa =
       p__GameEntityEvent__handle_fn__condt__close(
         p__GameEntityEvent__Data.args,
         delta_time,
-      )
+      );
+
+    if (
+      l__p__GameEntityEvent__handle_fn__condt__close__ReVa.success
     ) {
       l__ReVa = null;
+
+      // send info "l__p__GameEntityEvent__handle_fn__condt__close__ReVa.status" to the respective GameEntity
     } else {
       l__ReVa = p__GameEntityEvent__handle_fn__logic(
         p__GameEntityEvent__Data.args,
@@ -169,7 +200,13 @@ export interface GameEntityEvent__move_forward__ReTy
   extends GameEntityEvent__ReTy {
   //
 }
-export enum GameEntityEvent__move_forward__Status {
+export enum GameEntityEvent__move_forward__begin__Status {
+  OK,
+}
+export enum GameEntityEvent__move_forward__close__Status {
+  OK,
+}
+export enum GameEntityEvent__move_forward__logic__Status {
   OK,
 }
 
@@ -179,56 +216,20 @@ export interface GameEntityEvent__move_forward
 }
 
 function GameEntityEvent__move_forward__Args__check_props(
-  obj: any,
+  obj: object,
 ): obj is GameEntityEvent__move_forward__Args {
-  const check_prop__duration_ms = (): boolean => {
-    return ((obj.hasOwnProperty("duration_ms")) &&
-      ((typeof obj.elapsed_ms == "undefined") ||
-        (typeof obj.duration_ms == "number")));
-  };
-  const check_prop__Stat__speed = (): boolean => {
-    return (
-      (obj.hasOwnProperty("Stat__speed")) &&
-      ((typeof obj.Stat__speed == "undefined") ||
-        ((typeof obj.Stat__speed == "object") &&
-          (
-            (obj.speed.hasOwnProperty("m__value__base")) &&
-            (typeof obj.Stat__speed.m__value__base == "number") &&
-            (obj.speed.hasOwnProperty("m__value__base_bonusFLAT")) &&
-            (typeof obj.Stat__speed.m__value__base_bonusFLAT == "number") &&
-            (obj.speed.hasOwnProperty("m__value__base_bonusPCTG")) &&
-            (typeof obj.Stat__speed.m__value__base_bonusPCTG == "number") &&
-            (obj.speed.hasOwnProperty("m__value__max")) &&
-            (typeof obj.Stat__speed.m__value__max == "number") &&
-            (obj.speed.hasOwnProperty("m__value__max_bonusFLAT")) &&
-            (typeof obj.Stat__speed.m__value__max_bonusFLAT == "number") &&
-            (obj.speed.hasOwnProperty("m__value__max_bonusPCTG")) &&
-            (typeof obj.Stat__speed.m__value__max_bonusPCTG == "number") &&
-            (obj.speed.hasOwnProperty("m__value__cap")) &&
-            (typeof obj.Stat__speed.m__value__cap == "number") &&
-            (obj.speed.hasOwnProperty("m__value__curr")) &&
-            (typeof obj.Stat__speed.m__value__curr == "number")
-          )))
-    );
-  };
-
-  if (Object.keys(obj).length == 1) {
-    return (
-      check_prop__duration_ms() ||
-      check_prop__Stat__speed()
-    );
-  } else if (Object.keys(obj).length == 2) {
-    return (
-      check_prop__duration_ms() &&
-      check_prop__Stat__speed()
-    );
-  } else {
-    return (false);
-  }
+  return ((Object.keys(obj).length == 0) || (
+    (Object.keys(obj).length == 1) &&
+    (obj.hasOwnProperty("duration_ms")) &&
+    // @ts-ignore
+    (((typeof obj.elapsed_ms) == "undefined") ||
+      // @ts-ignore
+      ((typeof obj.duration_ms) == "number"))
+  ));
 }
 
 export function GameEntityEvent__move_forward__check_props(
-  obj: any,
+  obj: object,
 ): obj is GameEntityEvent__move_forward {
   return (GameEntityEvent__check_props<GameEntityEvent__move_forward__Args>(
     obj,

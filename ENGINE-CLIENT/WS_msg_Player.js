@@ -77,7 +77,7 @@ export class WS_msg_Player {
           msg__body.m__GameEntity__source,
         );
         if (l__GameEntity__source instanceof Player) {
-          g__GameMap.get().connect__Player(l__GameEntity__source);
+          g__GameMap.get().connect_Player(l__GameEntity__source);
         } else {
           throw new TypeError();
         }
@@ -98,7 +98,7 @@ export class WS_msg_Player {
           msg__body.m__GameEntity__source,
         );
         if (l__GameEntity__source instanceof Player) {
-          g__GameMap.get().disconnect__Player(l__GameEntity__source);
+          g__GameMap.get().disconnect_Player(l__GameEntity__source);
         } else {
           throw new TypeError();
         }

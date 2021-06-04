@@ -1,20 +1,12 @@
 export function WS__make(g__server_address, g__uuID, ws_name) {
-  return (new WebSocket(
-    `ws://${g__server_address}/ws_${ws_name}__set?uuID=${g__uuID}`,
-  ));
+  return (
+    new WebSocket(
+      `ws://${g__server_address}/ws_${ws_name}__set?uuID=${g__uuID}`,
+    )
+  );
 }
 
 export /*abstract */ class WS_msg {
-  kind;
-  id;
-  body;
-
-  constructor(kind, id, body) {
-    this.kind = kind;
-    this.id = id;
-    this.body = body;
-  }
-
   static recv(ws, kind, id, callback) {
     ws.addEventListener("message", function (evt) {
       const msg = JSON.parse(evt.data);

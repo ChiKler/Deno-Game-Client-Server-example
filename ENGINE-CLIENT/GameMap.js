@@ -18,10 +18,10 @@ export class GameMap {
     this.#m__Players_Map = new Map();
   }
 
-  connect__Player(p__Player) {
+  connect_Player(p__Player) {
     this.#m__Players_Map.set(p__Player.eeID, p__Player);
   }
-  disconnect__Player(p__Player) {
+  disconnect_Player(p__Player) {
     this.#m__Players_Map.delete(p__Player.eeID);
   }
 
@@ -140,7 +140,7 @@ export class GameMap {
 
       if (p__Player != undefined) {
         g__Player.set(p__Player);
-        g__GameMap.get().connect__Player(g__Player.get());
+        g__GameMap.get().connect_Player(g__Player.get());
       }
 
       g__GameMap.get().update__start(g__cvs, g__ctx, g__Player);

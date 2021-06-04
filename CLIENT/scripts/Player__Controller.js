@@ -29,8 +29,10 @@ const controller_mouse = {
       return;
     } else if (evt.code == controller_key.GameEntityEvent__move_forward.code) {
       const l__WS_msg__body = {
-        id: GameEntityEvent_ID.move_forward,
-        data: { info: { start: true, pause: false }, args: {} },
+        GameEntityEvent: {
+          id: GameEntityEvent_ID.move_forward,
+          data: { info: { start: true, pause: false }, args: {} },
+        },
       };
       WS_msg.send(
         g__ws_player.get(),
@@ -39,7 +41,7 @@ const controller_mouse = {
         l__WS_msg__body,
       );
       g__Player.get().m__GameEntityEvent__Buffer_In.push(
-        l__WS_msg__body,
+        l__WS_msg__body.GameEntityEvent,
       );
     }
   }
@@ -48,8 +50,10 @@ const controller_mouse = {
       return;
     } else if (evt.code == controller_key.GameEntityEvent__move_forward.code) {
       const l__WS_msg__body = {
-        id: GameEntityEvent_ID.move_forward,
-        data: { info: { start: false, pause: true }, args: {} },
+        GameEntityEvent: {
+          id: GameEntityEvent_ID.move_forward,
+          data: { info: { start: false, pause: true }, args: {} },
+        },
       };
       WS_msg.send(
         g__ws_player.get(),
@@ -58,7 +62,7 @@ const controller_mouse = {
         l__WS_msg__body,
       );
       g__Player.get().m__GameEntityEvent__Buffer_In.push(
-        l__WS_msg__body,
+        l__WS_msg__body.GameEntityEvent,
       );
     }
   }

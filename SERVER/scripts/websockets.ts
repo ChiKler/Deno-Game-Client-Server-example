@@ -26,8 +26,7 @@ export class WS_msg<WS_msg__body__Ty extends WS_msg__body> {
     this.body = body;
   }
 
-  static parse(msg_str: string): any {
-    console.log(msg_str);
+  static parse(msg_str: string): (WS_msg<object> | undefined) {
     try {
       const msg_obj = JSON.parse(msg_str);
 
@@ -37,13 +36,13 @@ export class WS_msg<WS_msg__body__Ty extends WS_msg__body> {
         (JSON.stringify(msg_obj) == "") // ?
       ) {
         throw new TypeError(`The value "msg_obj" is not a valid object.`);
-      } else if (msg_obj && typeof msg_obj == "object") {
+      } else if (msg_obj && ((typeof msg_obj) == "object")) {
         if (
           (Object.keys(msg_obj).length == 3) &&
           (msg_obj.hasOwnProperty("kind")) &&
           (typeof msg_obj.kind == "string") && (msg_obj.hasOwnProperty("id")) &&
           (typeof msg_obj.id == "number") && (msg_obj.hasOwnProperty("body")) &&
-          (typeof msg_obj.body == "object")
+          ((msg_obj.body != null) && ((typeof msg_obj.body) == "object"))
         ) {
           return (msg_obj);
         } else {
@@ -67,11 +66,10 @@ export class WS_msg<WS_msg__body__Ty extends WS_msg__body> {
     callback: (msg__body: WS_msg__body__Ty) => void,
   ): Promise<void> {
     const msg_obj = WS_msg.parse(msg_str);
-    console.log(msg_obj);
-    if (msg_obj.kind == kind && msg_obj.id == id) {
-      if (check_props(msg_obj.body)) {
-        console.log(msg_obj);
-        callback(msg_obj.body);
+
+    if ((msg_obj!.kind == kind) && (msg_obj!.id == id)) {
+      if (check_props(msg_obj!.body)) {
+        callback(msg_obj!.body);
       } else {
         // ignore the message
       }

@@ -117,38 +117,38 @@ export class GameMap {
     >();
   }
 
-  #connect__Player__calls_in_progress = 0;
-  #connect__Player__calls_in_progress__mutex = new Mutex();
-  static async connect__Player(
+  #connect_Player__calls_in_progress = 0;
+  #connect_Player__calls_in_progress__mutex = new Mutex();
+  static async connect_Player(
     g__GameMaps: Map<GameMap__ID, GameMap>,
     p__GameMap__ID: GameMap__ID,
     player: Player,
   ): Promise<{ status: Status; statusText: string }> {
     let l__GameMap: GameMap;
 
-    let l__GameMap__connect__Player__calls_in_progress__mutex__unlock:
+    let l__GameMap__connect_Player__calls_in_progress__mutex__unlock:
       ((() => void) | undefined) = undefined;
 
     let l__GameMap__wasAlreadyClosed = false;
 
     try {
-      l__GameMap__connect__Player__calls_in_progress__mutex__unlock =
+      l__GameMap__connect_Player__calls_in_progress__mutex__unlock =
         await g__GameMaps.get(p__GameMap__ID)!
-          .#connect__Player__calls_in_progress__mutex.lock();
+          .#connect_Player__calls_in_progress__mutex.lock();
 
       if (g__GameMaps.get(p__GameMap__ID)!.#m__isClosing) {
         l__GameMap__wasAlreadyClosed = true;
-        l__GameMap__connect__Player__calls_in_progress__mutex__unlock!();
+        l__GameMap__connect_Player__calls_in_progress__mutex__unlock!();
       } else {
         l__GameMap = g__GameMaps.get(p__GameMap__ID)!;
       }
     } catch {
       l__GameMap__wasAlreadyClosed = true;
       if (
-        l__GameMap__connect__Player__calls_in_progress__mutex__unlock !=
+        l__GameMap__connect_Player__calls_in_progress__mutex__unlock !=
           undefined
       ) {
-        l__GameMap__connect__Player__calls_in_progress__mutex__unlock!();
+        l__GameMap__connect_Player__calls_in_progress__mutex__unlock!();
       }
     }
 
@@ -159,12 +159,12 @@ export class GameMap {
           `The GameMap with GameMap__ID ${p__GameMap__ID} wasn't found. Could not connect the Player with eeID ${player.eeID}.`,
       });
     } else {
-      ++l__GameMap!.#connect__Player__calls_in_progress;
-      l__GameMap__connect__Player__calls_in_progress__mutex__unlock!();
+      ++l__GameMap!.#connect_Player__calls_in_progress;
+      l__GameMap__connect_Player__calls_in_progress__mutex__unlock!();
 
       l__GameMap!.#m__Players_BufferIn.pass(player);
 
-      --l__GameMap!.#connect__Player__calls_in_progress;
+      --l__GameMap!.#connect_Player__calls_in_progress;
       return ({
         status: Status.OK,
         statusText:
@@ -173,9 +173,9 @@ export class GameMap {
     }
   }
 
-  #disconnect__Player__calls_in_progress = 0;
-  #disconnect__Player__calls_in_progress__mutex = new Mutex();
-  static async disconnect__Player(
+  #disconnect_Player__calls_in_progress = 0;
+  #disconnect_Player__calls_in_progress__mutex = new Mutex();
+  static async disconnect_Player(
     g__GameMaps: Map<GameMap__ID, GameMap>,
     eeID: number,
   ): Promise<{ status: Status; statusText: string }> {
@@ -190,18 +190,18 @@ export class GameMap {
     while ((found == false) && (i < l__GameMap__IDs.length)) {
       let l__GameMap__wasAlreadyClosed = false;
 
-      let l__GameMap__disconnect__Player__calls_in_progress__mutex__unlock:
+      let l__GameMap__disconnect_Player__calls_in_progress__mutex__unlock:
         ((() => void) | undefined) = undefined;
 
       try {
-        l__GameMap__disconnect__Player__calls_in_progress__mutex__unlock =
+        l__GameMap__disconnect_Player__calls_in_progress__mutex__unlock =
           await g__GameMaps.get(l__GameMap__IDs[i])!
-            .#disconnect__Player__calls_in_progress__mutex.lock();
+            .#disconnect_Player__calls_in_progress__mutex.lock();
 
         if (g__GameMaps.get(l__GameMap__IDs[i])!.#m__isClosing) {
           l__GameMap__wasAlreadyClosed = true;
-          l__GameMap__disconnect__Player__calls_in_progress__mutex__unlock!();
-          l__GameMap__disconnect__Player__calls_in_progress__mutex__unlock =
+          l__GameMap__disconnect_Player__calls_in_progress__mutex__unlock!();
+          l__GameMap__disconnect_Player__calls_in_progress__mutex__unlock =
             undefined;
         } else {
           l__GameMap = g__GameMaps.get(l__GameMap__IDs[i])!;
@@ -209,18 +209,18 @@ export class GameMap {
       } catch {
         l__GameMap__wasAlreadyClosed = true;
         if (
-          l__GameMap__disconnect__Player__calls_in_progress__mutex__unlock !=
+          l__GameMap__disconnect_Player__calls_in_progress__mutex__unlock !=
             undefined
         ) {
-          l__GameMap__disconnect__Player__calls_in_progress__mutex__unlock!();
-          l__GameMap__disconnect__Player__calls_in_progress__mutex__unlock =
+          l__GameMap__disconnect_Player__calls_in_progress__mutex__unlock!();
+          l__GameMap__disconnect_Player__calls_in_progress__mutex__unlock =
             undefined;
         }
       }
 
       if (!l__GameMap__wasAlreadyClosed) {
-        ++l__GameMap!.#disconnect__Player__calls_in_progress;
-        l__GameMap__disconnect__Player__calls_in_progress__mutex__unlock!();
+        ++l__GameMap!.#disconnect_Player__calls_in_progress;
+        l__GameMap__disconnect_Player__calls_in_progress__mutex__unlock!();
 
         if (
           l__GameMap!.#m__Players_Map.get(eeID) ==
@@ -259,7 +259,7 @@ export class GameMap {
       l__GameMap!.#m__PetitionsToDisconnectPlayer_Map
         .delete(eeID);
 
-      --l__GameMap!.#disconnect__Player__calls_in_progress;
+      --l__GameMap!.#disconnect_Player__calls_in_progress;
       return ({
         status: l__PetitionToDisconnectPlayer.status!,
         statusText: l__PetitionToDisconnectPlayer.statusText!,
@@ -267,22 +267,21 @@ export class GameMap {
     }
   }
 
-  handle_socket_messages = async (
+  handle_WS_messages = async (
+    g__GameMaps: Map<GameMap__ID, GameMap>,
     p__Player: Player,
     ws_player: WebSocket,
   ): Promise<void> => {
     try {
-      const l__Player__source = p__Player;
-
       WS_msg_Player.send__WS_msg_Player__Connection(
-        l__Player__source,
+        p__Player,
         this.m__GameMap__ID,
       );
 
       this.#m__Players_Map.forEach((l__Player__target: Player) => {
-        if (l__Player__target.eeID != l__Player__source.eeID) {
+        if (l__Player__target.eeID != p__Player.eeID) {
           WS_msg_Player.send__WS_msg_Player__Sighting(
-            l__Player__source,
+            p__Player,
             l__Player__target,
           );
         }
@@ -290,9 +289,8 @@ export class GameMap {
     } catch {}
 
     for await (const msg_str of ws_player) {
-      console.log(<string> msg_str);
       if (isWebSocketCloseEvent(msg_str)) {
-        // ...
+        // GameMap.disconnect_Player(g__GameMaps, p__Player.eeID); // this generates an error
 
         break;
       } else {
@@ -474,13 +472,13 @@ export class GameMap {
 
     l__GameMap.#m__isClosing = true;
 
-    await l__GameMap.#connect__Player__calls_in_progress__mutex.lock();
-    await l__GameMap.#disconnect__Player__calls_in_progress__mutex.lock();
+    await l__GameMap.#connect_Player__calls_in_progress__mutex.lock();
+    await l__GameMap.#disconnect_Player__calls_in_progress__mutex.lock();
 
-    while (l__GameMap.#connect__Player__calls_in_progress > 0) {
+    while (l__GameMap.#connect_Player__calls_in_progress > 0) {
       await sleep(20);
     }
-    while (l__GameMap.#disconnect__Player__calls_in_progress > 0) {
+    while (l__GameMap.#disconnect_Player__calls_in_progress > 0) {
       await sleep(20);
     }
 

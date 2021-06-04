@@ -79,26 +79,24 @@ export const g__ws_chat = {
   },
 };
 
-export async function g__connect_user() {
+export async function g__connect_User() {
   return (await fetch(
-    `http://${g__server_address}/connect_user?uuID=${g__uuID}`,
+    `http://${g__server_address}/connect_User?uuID=${g__uuID}`,
   ));
 }
-export async function g__connect_player() {
-  await g__ws_player.set();
-
+export async function g__connect_Player() {
   return (await fetch(
-    `http://${g__server_address}/connect_player?uuID=${g__uuID}`,
+    `http://${g__server_address}/connect_Player?uuID=${g__uuID}`,
   ));
 }
-export async function g__disconnect_player() {
+export async function g__disconnect_Player() {
   return (await fetch(
-    `http://${g__server_address}/disconnect_player?uuID=${g__uuID}`,
+    `http://${g__server_address}/disconnect_Player?uuID=${g__uuID}`,
   ));
 }
-export async function g__disconnect_user() {
+export async function g__disconnect_User() {
   const res = await fetch(
-    `http://${g__server_address}/disconnect_user?uuID=${g__uuID}`,
+    `http://${g__server_address}/disconnect_User?uuID=${g__uuID}`,
   );
 
   if (res.status == 200) window.close();

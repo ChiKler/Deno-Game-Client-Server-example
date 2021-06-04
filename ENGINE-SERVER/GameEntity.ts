@@ -1,11 +1,11 @@
 import {
   GameEntityEvent__Buffer_In,
   GameEntityEvent__handle_fn,
-  GameEntityEvent__move_forward,
   GameEntityEvent__move_forward__Args,
-  GameEntityEvent__move_forward__check_props,
+  GameEntityEvent__move_forward__begin__Status,
+  GameEntityEvent__move_forward__close__Status,
+  GameEntityEvent__move_forward__logic__Status,
   GameEntityEvent__move_forward__ReTy,
-  GameEntityEvent__move_forward__Status,
   GameEntityEvent__ReTy,
   GameEntityEvent_ID,
   // @ts-ignore
@@ -35,25 +35,35 @@ export abstract class GameEntity {
   private Event__move_forward__handle_fn__condt__begin = (
     args: GameEntityEvent__move_forward__Args,
     delta_time: number,
-  ): boolean => {
+  ): {
+    success: boolean;
+    status: GameEntityEvent__move_forward__begin__Status;
+  } => {
     if (args.elapsed_ms == undefined) args.elapsed_ms = 0;
 
     args.elapsed_ms += (delta_time * 1000);
 
     if (args.duration_ms == undefined) args.duration_ms = Infinity;
 
-    const l__ReVa: boolean = (
-      (args.elapsed_ms! < args.duration_ms!) &&
-      (!this.m__GameObject.isMovementImpaired)
-    );
-
-    return (l__ReVa);
+    return ({
+      success: (
+        (args.elapsed_ms! < args.duration_ms!) &&
+        (!this.m__GameObject.isMovementImpaired)
+      ),
+      status: GameEntityEvent__move_forward__begin__Status.OK,
+    });
   };
   private Event__move_forward__handle_fn__condt__close = (
     args: GameEntityEvent__move_forward__Args,
     delta_time: number,
-  ): boolean => {
-    return (true);
+  ): {
+    success: boolean;
+    status: GameEntityEvent__move_forward__close__Status;
+  } => {
+    return ({
+      success: true,
+      status: GameEntityEvent__move_forward__close__Status.OK,
+    });
   };
   private Event__move_forward__handle_fn__logic = (
     args: GameEntityEvent__move_forward__Args,
@@ -66,7 +76,7 @@ export abstract class GameEntity {
     );
 
     return ({
-      status: GameEntityEvent__move_forward__Status.OK,
+      status: GameEntityEvent__move_forward__logic__Status.OK,
     });
   };
 
@@ -78,12 +88,11 @@ export abstract class GameEntity {
       this.m__GameEntityEvent__Buffer_In;
 
     l__m__GameEntityEvent__Buffer_In__old.forEach((l__GameEntityEvent) => {
-      let l__ReTy: (GameEntityEvent__ReTy | null | undefined);
+      let l__ReVa: (GameEntityEvent__ReTy | null | undefined);
 
       switch (l__GameEntityEvent.id) {
         case (GameEntityEvent_ID.move_forward):
-          console.log("GameEntityEvent triggered", this.eeID, "move_forward");
-          l__ReTy = GameEntityEvent__handle_fn(
+          l__ReVa = GameEntityEvent__handle_fn(
             l__GameEntityEvent.data,
             this.Event__move_forward__handle_fn__condt__begin,
             this.Event__move_forward__handle_fn__condt__close,
@@ -93,14 +102,14 @@ export abstract class GameEntity {
           break;
 
         default:
-          l__ReTy = undefined;
+          l__ReVa = undefined;
           break;
       }
 
-      if (l__ReTy !== undefined) {
+      if (l__ReVa !== undefined) {
         // Send return value to the corresponding GameEntity (be it a Player or an AI_npc).
 
-        if (l__ReTy !== null) {
+        if (l__ReVa !== null) {
           l__m__GameEntityEvent__Buffer_In__new.push(
             l__GameEntityEvent,
           );

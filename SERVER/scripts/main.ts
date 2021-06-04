@@ -34,23 +34,23 @@ async function g__server__handle_requests() {
       if (key == "uuID") return (value);
     }
   };
-  const handle_req__connect_user = async (
+  const handle_req__connect_User = async (
     req: ServerRequest,
   ) => {
     const uuID = get_uuID_from_req_url(req.url)!;
 
-    const l__User__connect_user__ReVa = await User.connect_user(
+    const l__User__connect_User__ReVa = await User.connect_User(
       g__Users,
       uuID,
     );
 
     console.info(
-      `"${req.url}": {\n  l__User__connect_user__ReVa: {\n    status: ${l__User__connect_user__ReVa.status}\n    statusText: ${l__User__connect_user__ReVa.statusText}\n  }\n}`,
+      `"${req.url}": {\n  l__User__connect_User__ReVa: {\n    status: ${l__User__connect_User__ReVa.status}\n    statusText: ${l__User__connect_User__ReVa.statusText}\n  }\n}`,
     );
 
     req.respond({
-      status: l__User__connect_user__ReVa.status,
-      statusText: l__User__connect_user__ReVa.statusText,
+      status: l__User__connect_User__ReVa.status,
+      statusText: l__User__connect_User__ReVa.statusText,
       body: "",
     });
   };
@@ -74,16 +74,16 @@ async function g__server__handle_requests() {
       );
 
       console.info(
-        `"${req.url}": {\n  l__User__connect_player__ReVa: {\n    status: ${l__User__ws_player__set__ReVa.status}\n    statusText: ${l__User__ws_player__set__ReVa.statusText}\n  }\n}`,
+        `"${req.url}": {\n  l__User__connect_Player__ReVa: {\n    status: ${l__User__ws_player__set__ReVa.status}\n    statusText: ${l__User__ws_player__set__ReVa.statusText}\n  }\n}`,
       );
     }
   };
-  const handle_req__connect_player = async (
+  const handle_req__connect_Player = async (
     req: ServerRequest,
   ) => {
     const uuID = get_uuID_from_req_url(req.url)!;
 
-    const l__User__connect_player__ReVa = await User.connect_player(
+    const l__User__connect_Player__ReVa = await User.connect_Player(
       g__GameMaps,
       GameMap__ID.Sandbox,
       g__Users,
@@ -91,54 +91,54 @@ async function g__server__handle_requests() {
     );
 
     console.info(
-      `"${req.url}": {\n  l__User__connect_player__ReVa: {\n    status: ${l__User__connect_player__ReVa.status}\n    statusText: ${l__User__connect_player__ReVa.statusText}\n  }\n}`,
+      `"${req.url}": {\n  l__User__connect_Player__ReVa: {\n    status: ${l__User__connect_Player__ReVa.status}\n    statusText: ${l__User__connect_Player__ReVa.statusText}\n  }\n}`,
     );
 
     req.respond({
-      status: l__User__connect_player__ReVa.status,
-      statusText: l__User__connect_player__ReVa.statusText,
+      status: l__User__connect_Player__ReVa.status,
+      statusText: l__User__connect_Player__ReVa.statusText,
       body: "",
     });
   };
-  const handle_req__disconnect_player = async (
+  const handle_req__disconnect_Player = async (
     req: ServerRequest,
   ) => {
     const uuID = get_uuID_from_req_url(req.url)!;
 
-    const l__User__disconnect_player__ReVa = await User.disconnect_player(
+    const l__User__disconnect_Player__ReVa = await User.disconnect_Player(
       g__GameMaps,
       g__Users,
       uuID,
     );
 
     console.info(
-      `"${req.url}": {\n  l__User__disconnect_player__ReVa: {\n    status: ${l__User__disconnect_player__ReVa.status}\n    statusText: ${l__User__disconnect_player__ReVa.statusText}\n  }\n}`,
+      `"${req.url}": {\n  l__User__disconnect_Player__ReVa: {\n    status: ${l__User__disconnect_Player__ReVa.status}\n    statusText: ${l__User__disconnect_Player__ReVa.statusText}\n  }\n}`,
     );
 
     req.respond({
-      status: l__User__disconnect_player__ReVa.status,
-      statusText: l__User__disconnect_player__ReVa.statusText,
+      status: l__User__disconnect_Player__ReVa.status,
+      statusText: l__User__disconnect_Player__ReVa.statusText,
       body: "",
     });
   };
-  const handle_req__disconnect_user = async (
+  const handle_req__disconnect_User = async (
     req: ServerRequest,
   ) => {
     const uuID = get_uuID_from_req_url(req.url)!;
 
-    const l__User__disconnect_user__ReVa = await User.disconnect_user(
+    const l__User__disconnect_User__ReVa = await User.disconnect_User(
       g__GameMaps,
       g__Users,
       uuID,
     );
 
     console.info(
-      `"${req.url}": {\n  l__User__disconnect_user__ReVa: {\n    status: ${l__User__disconnect_user__ReVa.status}\n    statusText: ${l__User__disconnect_user__ReVa.statusText}\n  }\n}`,
+      `"${req.url}": {\n  l__User__disconnect_User__ReVa: {\n    status: ${l__User__disconnect_User__ReVa.status}\n    statusText: ${l__User__disconnect_User__ReVa.statusText}\n  }\n}`,
     );
 
     req.respond({
-      status: l__User__disconnect_user__ReVa.status,
-      statusText: l__User__disconnect_user__ReVa.statusText,
+      status: l__User__disconnect_User__ReVa.status,
+      statusText: l__User__disconnect_User__ReVa.statusText,
       body: "",
     });
   };
@@ -207,25 +207,25 @@ async function g__server__handle_requests() {
         "../API/GameObject_Character_Blue.png",
       );
     } else if (
-      (req.method === "GET") && (req.url.split("?")[0] == "/connect_user")
+      (req.method === "GET") && (req.url.split("?")[0] == "/connect_User")
     ) {
-      handle_req__connect_user(req);
+      handle_req__connect_User(req);
     } else if (
       (req.method === "GET") && (req.url.split("?")[0] == "/ws_player__set")
     ) {
       handle_req__ws_player__set(req);
     } else if (
-      (req.method === "GET") && (req.url.split("?")[0] == "/connect_player")
+      (req.method === "GET") && (req.url.split("?")[0] == "/connect_Player")
     ) {
-      handle_req__connect_player(req);
+      handle_req__connect_Player(req);
     } else if (
-      (req.method === "GET") && (req.url.split("?")[0] == "/disconnect_player")
+      (req.method === "GET") && (req.url.split("?")[0] == "/disconnect_Player")
     ) {
-      handle_req__disconnect_player(req);
+      handle_req__disconnect_Player(req);
     } else if (
-      (req.method === "GET") && (req.url.split("?")[0] == "/disconnect_user")
+      (req.method === "GET") && (req.url.split("?")[0] == "/disconnect_User")
     ) {
-      handle_req__disconnect_user(req);
+      handle_req__disconnect_User(req);
     } else if (
       (req.method === "GET") &&
       ((req.url === "/scripts/canvas.js") ||

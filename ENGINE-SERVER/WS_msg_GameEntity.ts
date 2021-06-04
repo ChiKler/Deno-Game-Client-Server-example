@@ -11,7 +11,7 @@ import {
   // @ts-ignore
 } from "../SERVER/scripts/websockets.ts";
 
-export enum WS_msg_GameEntity_ID {
+export enum WS_msg_GameEntity__Kind {
   move_towards,
   move_forward,
   move_backward,
@@ -21,28 +21,31 @@ export enum WS_msg_GameEntity_ID {
 
 interface WS_msg_GameEntity__body extends WS_msg__body {}
 
-interface WS_msg_GameEntity__body__move_towards
+interface WS_msg_GameEntity_move_towards__body
   extends WS_msg_GameEntity__body {}
 
-interface WS_msg_GameEntity__body__move_forward
-  extends WS_msg_GameEntity__body {
-  m__GameEntityEvent: GameEntityEvent__move_forward;
+interface WS_msg_GameEntity_move_forward__body extends WS_msg_GameEntity__body {
+  GameEntityEvent: GameEntityEvent__move_forward;
 }
-function WS_msg_GameEntity__body__move_forward__check_props(
-  obj: any,
-): obj is WS_msg_GameEntity__body__move_forward {
+function WS_msg_GameEntity_move_forward__body__check_props(
+  obj: object,
+): obj is WS_msg_GameEntity_move_forward__body {
   return (
     (Object.keys(obj).length == 1) &&
-    (obj.hasOwnProperty("m__GameEntityEvent")) &&
-    (typeof obj.m__GameEntityEvent == "object") &&
-    GameEntityEvent__move_forward__check_props(obj.m__GameEntityEvent)
+    (obj.hasOwnProperty("GameEntityEvent")) &&
+    // @ts-ignore
+    ((obj.GameEntityEvent != null) &&
+      // @ts-ignore
+      ((typeof obj.GameEntityEvent) == "object")) &&
+    // @ts-ignore
+    GameEntityEvent__move_forward__check_props(obj.GameEntityEvent)
   );
 }
 
-interface WS_msg_GameEntity__body__move_backward
+interface WS_msg_GameEntity_move_backward__body
   extends WS_msg_GameEntity__body {}
-interface WS_msg_GameEntity__body__move_left extends WS_msg_GameEntity__body {}
-interface WS_msg_GameEntity__body__move_right extends WS_msg_GameEntity__body {}
+interface WS_msg_GameEntity_move_left__body extends WS_msg_GameEntity__body {}
+interface WS_msg_GameEntity_move_right__body extends WS_msg_GameEntity__body {}
 
 export class WS_msg_GameEntity<
   WS_msg_GameEntity__body__Ty extends WS_msg_GameEntity__body,
@@ -51,14 +54,14 @@ export class WS_msg_GameEntity<
     p__GameEntity: GameEntity,
     msg_str: string,
   ) {
-    WS_msg.recv<WS_msg_GameEntity__body__move_forward>(
+    WS_msg.recv<WS_msg_GameEntity_move_forward__body>(
       "WS_msg_GameEntity",
-      WS_msg_GameEntity_ID.move_forward,
+      WS_msg_GameEntity__Kind.move_forward,
       msg_str,
-      WS_msg_GameEntity__body__move_forward__check_props,
-      (msg__body: WS_msg_GameEntity__body__move_forward): void => {
+      WS_msg_GameEntity_move_forward__body__check_props,
+      (msg__body: WS_msg_GameEntity_move_forward__body): void => {
         p__GameEntity.m__GameEntityEvent__Buffer_In.push(
-          msg__body.m__GameEntityEvent,
+          msg__body.GameEntityEvent,
         );
       },
     );
