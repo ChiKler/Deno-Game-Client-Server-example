@@ -2,27 +2,36 @@ import { Player } from "./Player.js";
 
 import { Mutex, sleep, time_stamp } from "../vendor/utility/mod.js";
 
+
+
+
+
 export var GameMap_ID;
 (function (GameMap_ID) {
   GameMap_ID[GameMap_ID["Sandbox"] = 0] = "Sandbox";
 })(GameMap_ID || (GameMap_ID = {}));
 
-export class GameMap {
+export class GameMap
+{
   #m__GameMap_ID;
-
-  #m__Players_Map;
+  
+  Size;
+  
+  #m__Players;
 
   /*private */ constructor(p__GameMap__Args) {
     this.#m__GameMap_ID = p__GameMap__Args.GameMap_ID;
-
-    this.#m__Players_Map = new Map();
+    
+    this.Size = { X: 3600, Y: 3600 };
+    
+    this.#m__Players = new Map();
   }
 
   connect_Player(p__Player) {
-    this.#m__Players_Map.set(p__Player.eeID, p__Player);
+    this.#m__Players.set(p__Player.eeID, p__Player);
   }
   disconnect_Player(p__Player) {
-    this.#m__Players_Map.delete(p__Player.eeID);
+    this.#m__Players.delete(p__Player.eeID);
   }
 
   #render__requestAnimationFrame__ReVa = undefined;
@@ -39,7 +48,7 @@ export class GameMap {
     }
 
     {
-      this.#m__Players_Map.forEach((l__Player) => {
+      this.#m__Players.forEach((l__Player) => {
         l__Player.m__GameObject.draw(g__cvs, g__ctx, g__Player);
       });
 
@@ -55,7 +64,7 @@ export class GameMap {
 
   #update__isLoopRunning = false;
   #update__isLoopCompleted = true;
-  /*private*/ async update(previous_loop_ms) {
+  /*private */async update(previous_loop_ms) {
     this.#update__isLoopCompleted = false;
 
     const begin_ms = time_stamp();
@@ -69,7 +78,7 @@ export class GameMap {
       return (elapsed_ms() * 0.001);
     };
 
-    this.#m__Players_Map.forEach((l__Player) => {
+    this.#m__Players.forEach((l__Player) => {
       l__Player.Events__handle(delta_time());
     });
 
@@ -89,7 +98,7 @@ export class GameMap {
 
     return (elapsed_ms() - previous_loop_ms);
   }
-  /*private*/ async update__start(g__cvs, g__ctx, g__Player) {
+  /*private */async update__start(g__cvs, g__ctx, g__Player) {
     if (this.#update__isLoopRunning) {
       return;
     } else {
@@ -107,7 +116,7 @@ export class GameMap {
       update__previous_loop_ms = await this.update(update__previous_loop_ms);
     }
   }
-  /*private*/ async update__stop() {
+  /*private */async update__stop() {
     if (!this.#update__isLoopRunning) {
       return;
     } else {
@@ -119,10 +128,10 @@ export class GameMap {
     while (!this.#update__isLoopCompleted) await sleep(20);
   }
 
-  /*private*/ static g__GameMap__isOpened = false;
-  /*private*/ static g__GameMap__isOpened__mutex = new Mutex();
+  /*private */static g__GameMap__isOpened = false;
+  /*private */static g__GameMap__isOpened__mutex = new Mutex();
 
-  /*private */ static async g__GameMap__open(
+  /*private */static async g__GameMap__open(
     g__cvs,
     g__ctx,
     g__GameMap,

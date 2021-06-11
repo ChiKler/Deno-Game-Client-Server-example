@@ -319,12 +319,28 @@ async function g__server__handle_requests() {
         "../ENGINE-CLIENT/GameMap.js",
       );
     } else if (
+      (req.method === "GET") && (req.url === "/ENGINE-CLIENT/GameMap__QuadTree.js")
+    ) {
+      handle_req__GET__file(
+        req,
+        "text/javascript",
+        "../ENGINE-CLIENT/GameMap__QuadTree.js",
+      );
+    } else if (
       (req.method === "GET") && (req.url === "/ENGINE-CLIENT/GameObject.js")
     ) {
       handle_req__GET__file(
         req,
         "text/javascript",
         "../ENGINE-CLIENT/GameObject.js",
+      );
+    } else if (
+      (req.method === "GET") && (req.url === "/ENGINE-CLIENT/GameObject__HitBox.js")
+    ) {
+      handle_req__GET__file(
+        req,
+        "text/javascript",
+        "../ENGINE-CLIENT/GameObject__HitBox.js",
       );
     } else if (
       (req.method === "GET") && (req.url === "/ENGINE-CLIENT/mod.js")
@@ -341,6 +357,14 @@ async function g__server__handle_requests() {
         req,
         "text/javascript",
         "../ENGINE-CLIENT/Player.js",
+      );
+    } else if (
+      (req.method === "GET") && (req.url === "/ENGINE-CLIENT/Shape.js")
+    ) {
+      handle_req__GET__file(
+        req,
+        "text/javascript",
+        "../ENGINE-CLIENT/Shape.js",
       );
     } else if (
       (req.method === "GET") && (req.url === "/ENGINE-CLIENT/Stat.js")

@@ -14,10 +14,19 @@ export * from "./GameEntityEvent.ts";
 export * from "./GameMap.ts";
 
 // @ts-ignore
+export * from "./GameMap__QuadTree.ts";
+
+// @ts-ignore
 export * from "./GameObject.ts";
 
 // @ts-ignore
+export * from "./GameObject__HitBox.ts";
+
+// @ts-ignore
 export * from "./Player.ts";
+
+// @ts-ignore
+export * from "./Shape.ts";
 
 // @ts-ignore
 export * from "./Stat.ts";

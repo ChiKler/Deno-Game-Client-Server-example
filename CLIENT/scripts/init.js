@@ -4,9 +4,17 @@ import { g__connect_Player, g__connect_User, g__ws_player } from "./main.js";
 
 import { sleep } from "../../vendor/utility/mod.js";
 
-async function init() {
+
+
+
+
+async function init()
+{
   g__canvas__set();
-  while (true) {
+  
+  
+  while (true)
+  {
     const l__g__connect_User__ReVa = await g__connect_User();
 
     if (l__g__connect_User__ReVa.status == 200) {
@@ -24,8 +32,11 @@ async function init() {
       await sleep(1000);
     }
   }
+  
   await g__ws_player.set();
-  while (true) {
+  
+  while (true)
+  {
     const l__g__connect_Player__ReVa = await g__connect_Player();
 
     if (l__g__connect_Player__ReVa.status == 200) {
@@ -43,5 +54,6 @@ async function init() {
     }
   }
 }
+
 
 window.onload = init();

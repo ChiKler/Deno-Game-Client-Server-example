@@ -1,8 +1,17 @@
 // @ts-ignore
+import { GameObject__HitBox } from "./GameObject__HitBox.ts";
+
+// @ts-ignore
 import { Stat } from "./Stat.ts";
+
+
+
+
 
 export interface GameObject__Args {
   Pos: { X: number; Y: number; R: number };
+
+  HitBox?: GameObject__HitBox;
 
   Stat_MovementSpeed?: Stat;
   Stat_SteeringSpeed?: Stat;
@@ -13,6 +22,8 @@ export interface GameObject__Args {
 
 export abstract class GameObject {
   Pos: { X: number; Y: number; R: number };
+
+  HitBox: GameObject__HitBox;
 
   m__Stat_MovementSpeed: Stat;
   m__Stat_SteeringSpeed: Stat;
@@ -26,6 +37,8 @@ export abstract class GameObject {
       Y: p__GameObject__Args.Pos.Y,
       R: p__GameObject__Args.Pos.R,
     };
+
+    this.HitBox = p__GameObject__Args.HitBox!;
 
     this.m__Stat_MovementSpeed = p__GameObject__Args.Stat_MovementSpeed ||
       new Stat({ value__base: 300 });

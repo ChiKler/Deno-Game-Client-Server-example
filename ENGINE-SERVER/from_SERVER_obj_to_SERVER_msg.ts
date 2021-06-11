@@ -8,6 +8,8 @@ import { GameEntity } from "./GameEntity.ts";
 // @ts-ignore
 import { GameObject } from "./GameObject.ts";
 // @ts-ignore
+import { GameObject__HitBox } from "./GameObject__HitBox.ts";
+// @ts-ignore
 import { Player } from "./Player.ts";
 // @ts-ignore
 import { Stat } from "./Stat.ts";
@@ -28,6 +30,8 @@ export interface SERVER_msg__Character {
   args: {
     GameObject__Args: {
       Pos: { X: number; Y: number; R: number };
+      
+      HitBox : GameObject__HitBox;      
 
       Stat_MovementSpeed: SERVER_msg__Stat;
       Stat_SteeringSpeed: SERVER_msg__Stat;
@@ -52,6 +56,9 @@ export function from_SERVER_obj_to_SERVER_msg__Character(
       GameObject__Args: {
         // @ts-ignore
         Pos: p__Character.Pos,
+
+        // @ts-ignore
+        HitBox: p__Character.HitBox,
 
         // @ts-ignore
         Stat_MovementSpeed: Stat.to_SERVER_msg(

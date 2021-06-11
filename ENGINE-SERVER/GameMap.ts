@@ -88,8 +88,10 @@ export class GameMap {
   };
 
   readonly m__GameMap__ID: GameMap__ID;
+  
+  readonly Size : { X : number, Y : number };
 
-  #m__Players_Map: Map<number, Player>;
+  #m__Players: Map<number, Player>;
 
   // @ts-ignore
   #m__Players_BufferIn: GameMap.Players_BufferIn;
@@ -104,8 +106,10 @@ export class GameMap {
 
   private constructor(p__GameMap__Args: GameMap__Args) {
     this.m__GameMap__ID = p__GameMap__Args.GameMap__ID;
-
-    this.#m__Players_Map = new Map<number, Player>();
+    
+    this.Size = { X: 3600, Y: 3600 };
+    
+    this.#m__Players = new Map<number, Player>();
 
     this.#m__Players_BufferIn = new GameMap.Players_BufferIn();
     this.#m__Players_BufferOut = new GameMap.Players_BufferOut();
@@ -223,7 +227,7 @@ export class GameMap {
         l__GameMap__disconnect_Player__calls_in_progress__mutex__unlock!();
 
         if (
-          l__GameMap!.#m__Players_Map.get(eeID) ==
+          l__GameMap!.#m__Players.get(eeID) ==
             undefined
         ) {
           i++;
@@ -278,7 +282,7 @@ export class GameMap {
         this.m__GameMap__ID,
       );
 
-      this.#m__Players_Map.forEach((l__Player__target: Player) => {
+      this.#m__Players.forEach((l__Player__target: Player) => {
         if (l__Player__target.eeID != p__Player.eeID) {
           WS_msg_Player.send__WS_msg_Player__Sighting(
             p__Player,
@@ -359,9 +363,9 @@ export class GameMap {
 
           const l__PetitionToDisconnectPlayer = this
             .#m__PetitionsToDisconnectPlayer_Map.get(eeID)!;
-          const l__Player__to_be_disconnected = this.#m__Players_Map.get(eeID)!;
+          const l__Player__to_be_disconnected = this.#m__Players.get(eeID)!;
 
-          this.#m__Players_Map.delete(eeID);
+          this.#m__Players.delete(eeID);
 
           this.#m__Players_BufferOut.pass(
             new GameMap.Players_BufferOut__data__Ty(
@@ -384,12 +388,12 @@ export class GameMap {
       }
     }
 
-    this.#m__Players_Map.forEach((l__Player: Player) => {
+    this.#m__Players.forEach((l__Player: Player) => {
       l__Player.Events__handle(delta_time());
     });
 
-    this.#m__Players_Map.forEach((l__Player__source: Player) => {
-      this.#m__Players_Map.forEach((l__Player__target: Player) => {
+    this.#m__Players.forEach((l__Player__source: Player) => {
+      this.#m__Players.forEach((l__Player__target: Player) => {
         if (l__Player__target.eeID != l__Player__source.eeID) {
           WS_msg_Player.send__WS_msg_Player__Sighting(
             l__Player__source,
@@ -407,7 +411,7 @@ export class GameMap {
       ) {
         const player_that_arrives = m__Players_BufferIn__take__ReVa!;
 
-        this.#m__Players_Map.set(
+        this.#m__Players.set(
           player_that_arrives.eeID,
           player_that_arrives,
         );

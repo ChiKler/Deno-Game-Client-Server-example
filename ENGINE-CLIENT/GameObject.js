@@ -1,25 +1,24 @@
-// @ts-ignore
-import { Stat } from "./Stat.js";
-
 export /*abstract */ class GameObject {
   Pos;
-
+  
+  HitBox;
+  
   m__Stat_MovementSpeed;
   m__Stat_SteeringSpeed;
-
+  
   isMovementImpaired;
   isSteeringImpaired;
-
+  
   sprite;
   img;
 
   constructor(p__GameObject__Args) {
     this.Pos = p__GameObject__Args.Pos;
-
-    this.m__Stat_MovementSpeed = p__GameObject__Args.Stat_MovementSpeed ||
-      new Stat({ value__base: 300 });
-    this.m__Stat_SteeringSpeed = p__GameObject__Args.Stat_SteeringSpeed ||
-      new Stat({ value__base: 360 });
+    
+    this.HitBox = p__GameObject__Args.HitBox;
+    
+    this.m__Stat_MovementSpeed = p__GameObject__Args.Stat_MovementSpeed;
+    this.m__Stat_SteeringSpeed = p__GameObject__Args.Stat_SteeringSpeed;
 
     this.isMovementImpaired = p__GameObject__Args.isMovementImpaired || false;
     this.isSteeringImpaired = p__GameObject__Args.isSteeringImpaired || false;

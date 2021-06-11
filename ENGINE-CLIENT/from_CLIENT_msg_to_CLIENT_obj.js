@@ -13,6 +13,8 @@ export function from_CLIENT_msg_to_CLIENT_obj__Character(
     l__Character = new Character(
       {
         Pos: p__Character__CLIENT_msg.args.GameObject__Args.Pos,
+      
+        HitBox: p__Character__CLIENT_msg.args.GameObject__Args.HitBox,
 
         Stat_MovementSpeed: Stat.to_CLIENT_obj(
           p__Character__CLIENT_msg.args.GameObject__Args.Stat_MovementSpeed,

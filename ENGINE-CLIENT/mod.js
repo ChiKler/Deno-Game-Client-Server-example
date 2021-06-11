@@ -8,9 +8,15 @@ export * from "./GameEntityEvent.js";
 
 export * from "./GameMap.js";
 
+export * from "./GameMap__QuadTree.js";
+
 export * from "./GameObject.js";
 
+export * from "./GameObject__HitBox.js";
+
 export * from "./Player.js";
+
+export * from "./Shape.js";
 
 export * from "./Stat.js";
 
