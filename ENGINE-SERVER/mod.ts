@@ -2,10 +2,13 @@
 export * from "./Character.ts";
 
 // @ts-ignore
-export * from "./from_SERVER_obj_to_SERVER_msg.ts";
+export * from "./Character__to_SERVER_msg.ts";
 
 // @ts-ignore
 export * from "./GameEntity.ts";
+
+// @ts-ignore
+export * from "./GameEntity__to_SERVER_msg.ts";
 
 // @ts-ignore
 export * from "./GameEntityEvent.ts";
@@ -23,13 +26,22 @@ export * from "./GameObject.ts";
 export * from "./GameObject__HitBox.ts";
 
 // @ts-ignore
+export * from "./GameObject__to_SERVER_msg.ts";
+
+// @ts-ignore
 export * from "./Player.ts";
+
+// @ts-ignore
+export * from "./Player__to_SERVER_msg.ts";
 
 // @ts-ignore
 export * from "./Shape.ts";
 
 // @ts-ignore
 export * from "./Stat.ts";
+
+// @ts-ignore
+export * from "./Stat__to_SERVER_msg.ts";
 
 // @ts-ignore
 export * from "./WS_msg_GameEntity.ts";

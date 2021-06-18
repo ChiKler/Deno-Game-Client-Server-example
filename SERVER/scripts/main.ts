@@ -294,12 +294,28 @@ async function g__server__handle_requests() {
         "../ENGINE-CLIENT/Character.js",
       );
     } else if (
+      (req.method === "GET") && (req.url === "/ENGINE-CLIENT/Character__from_SERVER_msg.js")
+    ) {
+      handle_req__GET__file(
+        req,
+        "text/javascript",
+        "../ENGINE-CLIENT/Character__from_SERVER_msg.js",
+      );
+    } else if (
       (req.method === "GET") && (req.url === "/ENGINE-CLIENT/GameEntity.js")
     ) {
       handle_req__GET__file(
         req,
         "text/javascript",
         "../ENGINE-CLIENT/GameEntity.js",
+      );
+    } else if (
+      (req.method === "GET") && (req.url === "/ENGINE-CLIENT/GameEntity__from_SERVER_msg.js")
+    ) {
+      handle_req__GET__file(
+        req,
+        "text/javascript",
+        "../ENGINE-CLIENT/GameEntity__from_SERVER_msg.js",
       );
     } else if (
       (req.method === "GET") &&
@@ -343,6 +359,14 @@ async function g__server__handle_requests() {
         "../ENGINE-CLIENT/GameObject__HitBox.js",
       );
     } else if (
+      (req.method === "GET") && (req.url === "/ENGINE-CLIENT/GameObject__from_SERVER_msg.js")
+    ) {
+      handle_req__GET__file(
+        req,
+        "text/javascript",
+        "../ENGINE-CLIENT/GameObject__from_SERVER_msg.js",
+      );
+    } else if (
       (req.method === "GET") && (req.url === "/ENGINE-CLIENT/mod.js")
     ) {
       handle_req__GET__file(
@@ -359,6 +383,14 @@ async function g__server__handle_requests() {
         "../ENGINE-CLIENT/Player.js",
       );
     } else if (
+      (req.method === "GET") && (req.url === "/ENGINE-CLIENT/Player__from_SERVER_msg.js")
+    ) {
+      handle_req__GET__file(
+        req,
+        "text/javascript",
+        "../ENGINE-CLIENT/Player__from_SERVER_msg.js",
+      );
+    } else if (
       (req.method === "GET") && (req.url === "/ENGINE-CLIENT/Shape.js")
     ) {
       handle_req__GET__file(
@@ -373,6 +405,14 @@ async function g__server__handle_requests() {
         req,
         "text/javascript",
         "../ENGINE-CLIENT/Stat.js",
+      );
+    } else if (
+      (req.method === "GET") && (req.url === "/ENGINE-CLIENT/Stat__from_SERVER_msg.js")
+    ) {
+      handle_req__GET__file(
+        req,
+        "text/javascript",
+        "../ENGINE-CLIENT/Stat__from_SERVER_msg.js",
       );
     } else if (
       (req.method === "GET") &&
@@ -406,6 +446,22 @@ async function g__server__handle_requests() {
         req,
         "text/javascript",
         "../vendor/utility/Mutex.js",
+      );
+    } else if (
+      (req.method === "GET") && (req.url === "/vendor/utility/number_to_formatted_string.js")
+    ) {
+      handle_req__GET__file(
+        req,
+        "text/javascript",
+        "../vendor/utility/number_to_formatted_string.js",
+      );
+    } else if (
+      (req.method === "GET") && (req.url === "/vendor/utility/rand_int_between_range.js")
+    ) {
+      handle_req__GET__file(
+        req,
+        "text/javascript",
+        "../vendor/utility/rand_int_between_range.js",
       );
     } else if (
       (req.method === "GET") && (req.url === "/vendor/utility/sleep.js")

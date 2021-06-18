@@ -172,7 +172,7 @@ export class User {
                   Pos: { X: 0, Y: 0, R: 0 },
                 },
                 {
-                  Character_Skin: (
+                  Character__Skin: (
                     (uuID == "Jane")
                       ? "Red"
                       : ((uuID == "John") ? "Green" : "Blue")

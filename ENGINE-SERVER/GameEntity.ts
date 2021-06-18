@@ -41,17 +41,25 @@ import { GameObject } from "./GameObject.ts";
 // @ts-ignore
 import { Mutex } from "../vendor/utility/mod.ts";
 
-export interface GameEntity__Args {
-  eeID: number;
-  GameObject: GameObject;
+
+
+
+
+export interface GameEntity__Args
+{
+  eeID : number;
+  GameObject : GameObject;
 }
 
-export abstract class GameEntity {
-  readonly eeID: number;
-  readonly m__GameObject: GameObject;
+
+export abstract class GameEntity
+{
+  readonly eeID : number;
+  protected m__GameObject : GameObject;
 
   m__GameEntityEvent__Buffer_In = new GameEntityEvent__Buffer_In();
-  constructor(p__GameEntity__Args: GameEntity__Args) {
+  constructor(p__GameEntity__Args: GameEntity__Args)
+  {
     this.eeID = p__GameEntity__Args.eeID;
 
     this.m__GameObject = p__GameEntity__Args.GameObject;

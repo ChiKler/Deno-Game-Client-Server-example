@@ -1,21 +1,32 @@
-import {
-  from_SERVER_obj_to_SERVER_msg__GameEntity,
-  from_SERVER_obj_to_SERVER_msg__Player,
-  SERVER_msg__GameEntity,
-  SERVER_msg__Player,
-  // @ts-ignore
-} from "./from_SERVER_obj_to_SERVER_msg.ts";
 // @ts-ignore
 import { GameEntity } from "./GameEntity.ts";
+
+import {
+  GameEntity__SERVER_msg,
+  GameEntity__to_SERVER_msg
+}
+// @ts-ignore
+from "./GameEntity__to_SERVER_msg.ts";
+
 // @ts-ignore
 import { GameMap_ID } from "./GameMap.ts";
+
 // @ts-ignore
 import { Player } from "./Player.ts";
+
 import {
-  WS_msg,
-  WS_msg__body,
-  // @ts-ignore
-} from "../SERVER/scripts/websockets.ts";
+  Player__SERVER_msg,
+  Player__to_SERVER_msg
+}
+// @ts-ignore
+from "./Player__to_SERVER_msg.ts";
+
+// @ts-ignore
+import { WS_msg, WS_msg__body } from "../SERVER/scripts/websockets.ts";
+
+
+
+
 
 export enum WS_msg_Player_ID {
   Connection,
@@ -28,20 +39,20 @@ export enum WS_msg_Player_ID {
 interface WS_msg_Player__body extends WS_msg__body {}
 
 interface WS_msg_Player__body__Connection extends WS_msg_Player__body {
-  m__Player__source: SERVER_msg__Player;
+  m__Player__source: Player__SERVER_msg;
   m__GameMap_ID: GameMap_ID;
 }
 interface WS_msg_Player__body__Disconnection extends WS_msg_Player__body {
   m__GameMap_ID?: GameMap_ID;
 }
 interface WS_msg_Player__body__Sighting extends WS_msg_Player__body {
-  m__GameEntity__source: SERVER_msg__GameEntity;
+  m__GameEntity__source: GameEntity__SERVER_msg;
 }
 interface WS_msg_Player__body__Vanishing extends WS_msg_Player__body {
-  m__GameEntity__source: SERVER_msg__GameEntity;
+  m__GameEntity__source: GameEntity__SERVER_msg;
 }
 interface WS_msg_Player__body__Takedown extends WS_msg_Player__body {
-  m__GameEntity__source: SERVER_msg__GameEntity;
+  m__GameEntity__source: GameEntity__SERVER_msg;
 }
 
 export class WS_msg_Player<WS_msg_Player__body__Ty extends WS_msg_Player__body>
@@ -57,7 +68,7 @@ export class WS_msg_Player<WS_msg_Player__body__Ty extends WS_msg_Player__body>
       kind: "WS_msg_Player",
       id: WS_msg_Player_ID.Connection,
       body: {
-        m__Player__source: from_SERVER_obj_to_SERVER_msg__Player(
+        m__Player__source: Player__to_SERVER_msg(
           p__Player__source,
         ),
         m__GameMap_ID: p__GameMap_ID,
@@ -89,7 +100,7 @@ export class WS_msg_Player<WS_msg_Player__body__Ty extends WS_msg_Player__body>
       kind: "WS_msg_Player",
       id: WS_msg_Player_ID.Sighting,
       body: {
-        m__GameEntity__source: from_SERVER_obj_to_SERVER_msg__GameEntity(
+        m__GameEntity__source: GameEntity__to_SERVER_msg(
           p__GameEntity__source,
         ),
       },
@@ -107,7 +118,7 @@ export class WS_msg_Player<WS_msg_Player__body__Ty extends WS_msg_Player__body>
       kind: "WS_msg_Player",
       id: WS_msg_Player_ID.Vanishing,
       body: {
-        m__GameEntity__source: from_SERVER_obj_to_SERVER_msg__GameEntity(
+        m__GameEntity__source: GameEntity__to_SERVER_msg(
           p__GameEntity__source,
         ),
       },
@@ -125,7 +136,7 @@ export class WS_msg_Player<WS_msg_Player__body__Ty extends WS_msg_Player__body>
       kind: "WS_msg_Player",
       id: WS_msg_Player_ID.Takedown,
       body: {
-        m__GameEntity__source: from_SERVER_obj_to_SERVER_msg__GameEntity(
+        m__GameEntity__source: GameEntity__to_SERVER_msg(
           p__GameEntity__source,
         ),
       },

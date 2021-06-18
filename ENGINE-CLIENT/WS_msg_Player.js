@@ -1,11 +1,16 @@
-import {
-  from_CLIENT_msg_to_CLIENT_obj__GameEntity,
-  from_CLIENT_msg_to_CLIENT_obj__Player,
-  GameMap,
-  Player,
-} from "../../ENGINE-CLIENT/mod.js";
+import { GameEntity__from_SERVER_msg } from "./GameEntity__from_SERVER_msg.js";
+
+import { GameMap } from "./GameMap.js";
+
+import { Player } from "./Player.js";
+
+import { Player__from_SERVER_msg } from "./Player__from_SERVER_msg.js";
 
 import { WS_msg } from "../CLIENT/scripts/websockets.js";
+
+
+
+
 
 export var WS_msg_Player_ID;
 (function (WS_msg_Player_ID) {
@@ -35,7 +40,7 @@ export class WS_msg_Player {
           g__GameMap,
           g__Player,
           msg__body.m__GameMap_ID,
-          from_CLIENT_msg_to_CLIENT_obj__Player(msg__body.m__Player__source),
+          Player__from_SERVER_msg(msg__body.m__Player__source),
         );
       },
     );
@@ -73,7 +78,7 @@ export class WS_msg_Player {
       "WS_msg_Player",
       WS_msg_Player_ID.Sighting,
       (msg__body) => {
-        const l__GameEntity__source = from_CLIENT_msg_to_CLIENT_obj__GameEntity(
+        const l__GameEntity__source = GameEntity__from_SERVER_msg(
           msg__body.m__GameEntity__source,
         );
         if (l__GameEntity__source instanceof Player) {
@@ -94,7 +99,7 @@ export class WS_msg_Player {
       "WS_msg_Player",
       WS_msg_Player_ID.Vanishing,
       (msg__body) => {
-        const l__GameEntity__source = from_CLIENT_msg_to_CLIENT_obj__GameEntity(
+        const l__GameEntity__source = GameEntity__from_SERVER_msg(
           msg__body.m__GameEntity__source,
         );
         if (l__GameEntity__source instanceof Player) {

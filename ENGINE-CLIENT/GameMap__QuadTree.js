@@ -4,89 +4,181 @@ import { Rectangle } from "./Shape.js";
 
 
 
-export class GameMap__QuadTree
+class GameMap__QuadTree__Quadrant
 {
-  #quadrants;
+  id;
+  parent;
+  Rectangle;
+  is_subdivided;
+  children;
+  GameEntities;
   
-  #quadrants_by_eeID;
-
-
-  /*private */static generate_quadrants(p__Rectangle, p__GameEntities, p__quadrants, p__quadrants_by_eeID)
+  
+  /*private */static id_count = 0;
+  
+  
+  /*private */static is_subdivisible(p__Rectangle__Size__X, p__Rectangle__Size__Y, p__GameEntities__length)
   {
-    if (p__GameEntities.length > 2)
+    return (
+      (((p__Rectangle__Size__X > 200) && (p__Rectangle__Size__Y > 200)) && (p__GameEntities__length > 2))
+      ||
+      (((p__Rectangle__Size__X > 80) && (p__Rectangle__Size__Y > 80)) && (p__GameEntities__length > 3))
+    );
+  }
+  
+  
+  constructor(parent, p__Rectangle, p__GameEntities, p__Quadrants, p__Quadrants_by_eeID)
+  {
+    this.id = GameMap__QuadTree__Quadrant.id_count++;
+    this.parent = parent;
+    this.Rectangle = p__Rectangle;
+    
+    const this__Rectangle__Size__X = this.Rectangle.Size.X;
+    const this__Rectangle__Size__Y = this.Rectangle.Size.Y;
+    
+    if (GameMap__QuadTree__Quadrant.is_subdivisible(this__Rectangle__Size__X, this__Rectangle__Size__Y, p__GameEntities.length))
     {
+      const p__Rectangle__Size__X__half = (this__Rectangle__Size__X / 2);
+      const p__Rectangle__Size__Y__half = (this__Rectangle__Size__Y / 2);
       const p__Rectangle__Pos__X = p__Rectangle.Pos.X;
       const p__Rectangle__Pos__Y = p__Rectangle.Pos.Y;
-      const p__Rectangle__Size__X__half = (p__Rectangle.Size.X / 2);
-      const p__Rectangle__Size__Y__half = (p__Rectangle.Size.Y / 2);
       
-      const p__Rectangle__NW = new Rectangle(
-        {
-          X: p__Rectangle__Pos__X,
-          Y: p__Rectangle__Pos__Y,
-          R: 0
-        },
-        {
-          X: p__Rectangle__Size__X__half,
-          Y: p__Rectangle__Size__Y__half
-        }
-      );
-      const p__Rectangle__NW__GameEntities = p__Rectangle__NW.select_GameEntities_that_intersect(p__GameEntities);
+      const generate_Quadrant = (p__Rectangle) => {
+        return (
+          new GameMap__QuadTree__Quadrant(
+            p__Rectangle,
+            p__Rectangle.select_GameEntities_that_intersect(p__GameEntities)
+          )
+        );
+      }
       
-      const p__Rectangle__NE= new Rectangle(
-        {
-          X: (p__Rectangle__Pos__X + p__Rectangle__Size__X__half),
-          Y: p__Rectangle__Pos__Y,
-          R: 0
-        },
-        {
-          X: p__Rectangle__Size__X__half,
-          Y: p__Rectangle__Size__Y__half
-        }
-      );
-      const p__Rectangle__NE__GameEntities = p__Rectangle__NE.select_GameEntities_that_intersect(p__GameEntities);
+      Promise.all([
+        (async () => {
+          this.children.nw = generate_Quadrant(
+            new Rectangle(
+              {
+                X: this__Rectangle__Pos__X,
+                Y: this__Rectangle__Pos__Y,
+                R: 0
+              },
+              {
+                X: this__Rectangle__Size__X__half,
+                Y: this__Rectangle__Size__Y__half
+              }
+            ),
+          );
+        })(),
+        (async () => {
+          this.children.ne = generate_Quadrant(
+            new Rectangle(
+              {
+                X: (this__Rectangle__Pos__X + this__Rectangle__Size__X__half),
+                Y: this__Rectangle__Pos__Y,
+                R: 0
+              },
+              {
+                X: this__Rectangle__Size__X__half,
+                Y: this__Rectangle__Size__Y__half
+              }
+            ),
+          );
+        })(),
+        (async () => {
+          this.children.sw = generate_Quadrant(
+            new Rectangle(
+              {
+                X: this__Rectangle__Pos__X,
+                Y: (this__Rectangle__Pos__Y + this__Rectangle__Size__Y__half),
+                R: 0
+              },
+              {
+                X: this__Rectangle__Size__X__half,
+                Y: this__Rectangle__Size__Y__half
+              }
+            ),
+          );
+        })(),
+        (async () => {
+          this.children.se = generate_Quadrant(
+            new Rectangle(
+              {
+                X: (this__Rectangle__Pos__X + this__Rectangle__Size__X__half),
+                Y: (this__Rectangle__Pos__Y + this__Rectangle__Size__Y__half),
+                R: 0
+              },
+              {
+                X: this__Rectangle__Size__X__half,
+                Y: this__Rectangle__Size__Y__half
+              }
+            ),
+          );
+        })()
+      ]);
       
-      const p__Rectangle__SE= new Rectangle(
-        {
-          X: (p__Rectangle__Pos__X + p__Rectangle__Size__X__half),
-          Y: (p__Rectangle__Pos__Y + p__Rectangle__Size__Y__half),
-          R: 0
-        },
-        {
-          X: p__Rectangle__Size__X__half,
-          Y: p__Rectangle__Size__Y__half
-        }
-      );
-      const p__Rectangle__SE__GameEntities = p__Rectangle__SE.select_GameEntities_that_intersect(p__GameEntities);
-      
-      const p__Rectangle__SW= new Rectangle(
-        {
-          X: p__Rectangle__Pos__X,
-          Y: (p__Rectangle__Pos__Y + p__Rectangle__Size__Y__half),
-          R: 0
-        },
-        {
-          X: p__Rectangle__Size__X__half,
-          Y: p__Rectangle__Size__Y__half
-        }
-      );
-      const p__Rectangle__SW__GameEntities = p__Rectangle__SW.select_GameEntities_that_intersect(p__GameEntities);
-      
-      
-      GameMap__QuadTree.generate_quadrants(p__Rectangle__NW, p__Rectangle__NW__GameEntities, p__quadrants_by_eeID);
-      GameMap__QuadTree.generate_quadrants(p__Rectangle__NE, p__Rectangle__NE__GameEntities, p__quadrants_by_eeID);
-      GameMap__QuadTree.generate_quadrants(p__Rectangle__SE, p__Rectangle__SE__GameEntities, p__quadrants_by_eeID);
-      GameMap__QuadTree.generate_quadrants(p__Rectangle__SW, p__Rectangle__SW__GameEntities, p__quadrants_by_eeID);
+      this.is_subdivided = true;
     }
     else
     {
-      p__quadrants.push(this);
+      const this__id_accessor = this.id + "";
+      
+      p__Quadrants[this__id_accessor] = this;
 
-      for (const p__GameEntity in p__GameEntities) {
-        p__quadrants_by_eeID[p__GameEntity.eeID].push(this);
+      this.GameEntities = new Array();
+
+      for (let i = 0; i < p__GameEntities.length; i++)
+      {
+        const p__GameEntity = p__GameEntities[i];
+        
+        const eeID = p__GameEntity.eeID;
+        
+        const eeID_accessor = eeID + "";
+        
+        this.GameEntities[eeID_accessor] = p__GameEntity;
+        
+        p__Quadrants_by_eeID[eeID_accessor][this__id_accessor] = this;
+
+        this.eeIDs.push(eeID);
       };
+      
+      this.is_subdivided = false;
     }
   }
+  
+  
+  /*public */async get_array_of_children()
+  {
+    const l__Quadrants = new Array();
+    
+    const search = async (Quadrant) =>
+    {
+      if (Quadrant.subdivided)
+      {
+        search(Quadrant.children.nw)
+        search(Quadrant.children.ne)
+        search(Quadrant.children.sw)
+        search(Quadrant.children.se)
+      }
+      else
+      {
+        l__Quadrants.push(Quadrant);
+        return;
+      }
+    }
+    
+    await search(this);
+    
+    return (l__Quadrants);
+  }
+}
+
+
+export class GameMap__QuadTree
+{
+  #Quadrant;
+  
+  #Quadrants;
+  
+  #Quadrants_by_eeID;
   
   
   constructor(p__GameMap, p__GameEntities)
@@ -97,24 +189,144 @@ export class GameMap__QuadTree
       l__GameEntities.push(p__GameEntity);
     });
     
-    GameMap__QuadTree.generate_quadrants(
+    this.#Quadrants = {};
+    
+    this.#Quadrants_by_eeID = new Map();
+    
+    this.#Quadrant = new GameMap__QuadTree__Quadrant(
+      undefined,
       new Rectangle({ X: 0, Y: 0, R: 0 }, { X: p__GameMap.Size.X, Y: p__GameMap.Size.Y }),
       l__GameEntities,
-      this.#quadrants,
-      this.#quadrants_by_eeID
+      this.#Quadrants,
+      this.#Quadrants_by_eeID
     );console.log(this);
   }
   
   
-  /*private */get_quadrants_that_intersect_with_Shape(p__Shape)
+  insert(p__GameEntity)
   {
-    const l__quadrants = new Array();
+    //
+  }
+  
+  
+  remove(eeID)
+  {
+    const l__Quadrants = this.#Quadrants_by_eeID[eeID + ""];
     
-    for (let l__quadrant in this.#quadrants)
+    const l__Quadrants_updated__ids = new Array();
+    const l__Quadtrees_removed__ids = new Array();
+    
+    const l__Quadrants__vs = Object.values(l__Quadrants);
+    for (let i = 0; i < vs.length; i++)
     {
-      if (p__Shape.intersects_Rectangle(l__quadrant)) l__quadrants.push(l__quadrant);
+      const l__Quadrant = l__Quadrants__vs[i];
+      
+      
+      const l__GameEntities = l__Quadrant.GameEntities;
+      
+      const ks = Object.keys(l__GameEntities);
+      for (let i = 0; i < ks.length; i++)
+      {
+        const k = ks[i];
+        
+        if (k == eeID) delete l__GameEntities[eeID + ""];
+      }
+
+
+      let needsToBeUpdated = true;
+      
+      for (let i = 0; i < l__Quadrants_updated__ids.length; i++)
+      {
+        if (l__Quadrants_updated__ids[i] == l__Quadrant.id) needsToBeUpdated = false; break;
+      }
+      
+      if (needsToBeUpdated)
+      {
+        const l__Quadrant__parent = l__Quadrant.parent;
+
+        if ((l__Quadrant__parent != undefined) && (!GameMap__QuadTree__Quadrant.is_subdivisible(l__Quadrant__parent)))
+        {
+          const l__GameEntities = {};
+          
+          const add_GameEntities_from_siblings = (l__Quadrant__sibling) =>
+          {
+            l__Quadtrees_removed__ids.push(l__Quadrant__sibling.id);
+            
+            const l__Quadrant__sibling__GameEntities = l__Quadrant__sibling.GameEntities;
+
+            for (let i = 0; i < l__Quadrant__sibling__GameEntities.length; i++)
+            {
+              l__GameEntities[eeID + ""] = l__Quadrant__sibling__GameEntities[i];
+
+              l__Quadrants_updated__ids.push(l__Quadrant__sibling.id);
+            }
+          }
+          
+          const l__Quadrant__siblings = l__Quadrant__parent.children;
+          
+          add_GameEntities_from_siblings(l__Quadrant__siblings.nw);
+          add_GameEntities_from_siblings(l__Quadrant__siblings.ne);
+          add_GameEntities_from_siblings(l__Quadrant__siblings.sw);
+          add_GameEntities_from_siblings(l__Quadrant__siblings.se);
+
+          l__Quadrant__siblings = undefined;
+
+          l__Quadrant__parent.is_subdivided = false;
+
+          l__Quadrant__parent.GameEntities = l__GameEntities;
+          
+          this__Quadrants__k = (l__Quadrant__parent.id + "");
+
+          this.#Quadrants[this__Quadrants__k] = l__Quadrant__parent;
+          
+          for (let i = 0; i < l__Quadrant__parent.GameEntities.length; i++)
+          {
+            this.#Quadrants_by_eeID[l__Quadrant__parent__GameEntities[i].eeID + ""]
+              [this__Quadrants__k] = l__Quadrant__parent;
+          }
+        }
+        else
+        {
+          l__Quadrants_updated__ids.push(l__Quadrant.id);
+        }
+      }
+    }
+
+    for (let i = 0; i < l__Quadtrees_removed__ids.length; i++)
+    {
+      const this__Quadrants__ks = Object.keys(this.#Quadrants);
+      for (let i = 0; i < this__Quadrants__ks.length; i++)
+      {
+        const this__Quadrants__k = this__Quadrants__ks[i];
+        if (this__Quadrants__k == l__Quadtrees_removed__ids[i])
+          delete this.#Quadrants[this__Quadrants__k];
+      }
+
+      const this__Quadrants_by_eeID__vs = Object.values(this.#Quadrants_by_eeID);
+      for (let i = 0; i < this__Quadrants_by_eeID__vs.length; i++)
+      {
+        const this__Quadrants_by_eeID__v = this__Quadrants_by_eeID__vs[i];
+        const this__Quadrants_by_eeID__v__ks = Object.keys(this__Quadrants_by_eeID__v);
+        for (let i = 0; i < this__Quadrants_by_eeID__v__ks.length; i++)
+        {
+          const this__Quadrants_by_eeID__v__k = this__Quadrants_by_eeID__v__ks[i];
+          if (this__Quadrants_by_eeID__v__k == l__Quadtrees_removed__ids[i])
+            delete l__Quadrants[this__Quadrants_by_eeID__v__k];
+        }
+      }
+    }
+  }
+  
+  
+  /*private */get_Quadrants_that_intersect_with_Shape(p__Shape)
+  {
+    const l__Quadrants = new Array();
+    
+    for (let l__Quadrant in this.#Quadrants)
+    {
+      if (p__Shape.intersects_Rectangle(l__Quadrant.Rectangle)) l__Quadrants.push(l__Quadrant);
     }
     
-    return (l__quadrants);
+    return (l__Quadrants);
   }
 }

@@ -9,29 +9,30 @@ import { Stat } from "./Stat.ts";
 
 
 export interface GameObject__Args {
-  Pos: { X: number; Y: number; R: number };
+  Pos : { X : number; Y : number; R : number };
 
-  HitBox?: GameObject__HitBox;
+  HitBox? : GameObject__HitBox;
 
-  Stat_MovementSpeed?: Stat;
-  Stat_SteeringSpeed?: Stat;
+  Stat_MovementSpeed? : Stat;
+  Stat_SteeringSpeed? : Stat;
 
-  isMovementImpaired?: boolean;
-  isSteeringImpaired?: boolean;
+  isMovementImpaired? : boolean;
+  isSteeringImpaired? : boolean;
 }
 
 export abstract class GameObject {
-  Pos: { X: number; Y: number; R: number };
+  Pos : { X : number; Y : number; R : number };
 
-  HitBox: GameObject__HitBox;
+  HitBox : GameObject__HitBox;
 
-  m__Stat_MovementSpeed: Stat;
-  m__Stat_SteeringSpeed: Stat;
+  m__Stat_MovementSpeed : Stat;
+  m__Stat_SteeringSpeed : Stat;
 
-  isMovementImpaired: boolean;
-  isSteeringImpaired: boolean;
+  isMovementImpaired : boolean;
+  isSteeringImpaired : boolean;
 
-  constructor(p__GameObject__Args: GameObject__Args) {
+  constructor(p__GameObject__Args: GameObject__Args)
+  {
     this.Pos = {
       X: p__GameObject__Args.Pos.X,
       Y: p__GameObject__Args.Pos.Y,
@@ -40,19 +41,17 @@ export abstract class GameObject {
 
     this.HitBox = p__GameObject__Args.HitBox!;
 
-    this.m__Stat_MovementSpeed = p__GameObject__Args.Stat_MovementSpeed ||
-      new Stat({ value__base: 300 });
-    this.m__Stat_SteeringSpeed = p__GameObject__Args.Stat_SteeringSpeed ||
-      new Stat({ value__base: 360 });
+    this.m__Stat_MovementSpeed = p__GameObject__Args.Stat_MovementSpeed!;
+    this.m__Stat_SteeringSpeed = p__GameObject__Args.Stat_SteeringSpeed!;
 
     this.isMovementImpaired = p__GameObject__Args.isMovementImpaired || false;
     this.isSteeringImpaired = p__GameObject__Args.isSteeringImpaired || false;
   }
 
   look_towards(
-    delta_time: number,
-    p__Pos__R__target: number,
-    p__Stat_SteeringSpeed: (Stat | undefined),
+    delta_time : number,
+    p__Pos__R__target : number,
+    p__Stat_SteeringSpeed : (Stat | undefined),
   ) {
     const l__PI = Math.PI;
     const l__Pos__R__old = this.Pos.R;
@@ -122,7 +121,7 @@ export abstract class GameObject {
     }
   }
 
-  move_forward(delta_time: number, p__Stat_MovementSpeed: (Stat | undefined)) {
+  move_forward(delta_time : number, p__Stat_MovementSpeed : (Stat | undefined)) {
     const l__Stat_MovementSpeed =
       (p__Stat_MovementSpeed || this.m__Stat_MovementSpeed);
 
@@ -136,7 +135,7 @@ export abstract class GameObject {
     this.Pos.X += step_legnth1__X;
     this.Pos.Y += step_legnth1__Y;
   }
-  move_backward(delta_time: number, p__Stat_MovementSpeed: (Stat | undefined)) {
+  move_backward(delta_time : number, p__Stat_MovementSpeed : (Stat | undefined)) {
     const l__Stat_MovementSpeed =
       (p__Stat_MovementSpeed || this.m__Stat_MovementSpeed);
 
@@ -150,7 +149,7 @@ export abstract class GameObject {
     this.Pos.X -= step_legnth1__X;
     this.Pos.Y -= step_legnth1__Y;
   }
-  move_left(delta_time: number, p__Stat_MovementSpeed: (Stat | undefined)) {
+  move_left(delta_time : number, p__Stat_MovementSpeed : (Stat | undefined)) {
     const l__Stat_MovementSpeed =
       (p__Stat_MovementSpeed || this.m__Stat_MovementSpeed);
 
@@ -164,7 +163,7 @@ export abstract class GameObject {
     this.Pos.X += step_legnth1__X;
     this.Pos.Y -= step_legnth1__Y;
   }
-  move_right(delta_time: number, p__Stat_MovementSpeed: (Stat | undefined)) {
+  move_right(delta_time : number, p__Stat_MovementSpeed : (Stat | undefined)) {
     const l__Stat_MovementSpeed =
       (p__Stat_MovementSpeed || this.m__Stat_MovementSpeed);
 
@@ -178,7 +177,7 @@ export abstract class GameObject {
     this.Pos.X -= step_legnth1__X;
     this.Pos.Y += step_legnth1__Y;
   }
-  steer_left(delta_time: number, p__Stat_SteeringSpeed: (Stat | undefined)) {
+  steer_left(delta_time : number, p__Stat_SteeringSpeed : (Stat | undefined)) {
     const l__PI = Math.PI;
     const l__Pos__R__old = this.Pos.R;
 
@@ -204,7 +203,7 @@ export abstract class GameObject {
       this.Pos.R = (l__Pos__R__new__from_0_to_2PI);
     }
   }
-  steer_right(delta_time: number, p__Stat_SteeringSpeed: (Stat | undefined)) {
+  steer_right(delta_time : number, p__Stat_SteeringSpeed : (Stat | undefined)) {
     const l__PI = Math.PI;
     const l__Pos__R__old = this.Pos.R;
 

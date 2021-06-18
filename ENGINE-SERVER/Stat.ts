@@ -1,60 +1,60 @@
-interface Stat__Args {
-  value__base: number;
-  value__base_bonusFLAT?: number;
-  value__base_bonusPCTG?: number;
+export type Stat__Kind =
+(
+  | "MovementSpeed"
+  | "SteeringSpeed"
+);
 
-  value__max_bonusFLAT?: number;
-  value__max_bonusPCTG?: number;
 
-  value__curr?: number;
+export interface Stat__Args
+{
+  kind : Stat__Kind;
+  
+  base : number;
+  base_bonus_flat? : number;
+  base_bonus_pctg? : number;
+
+  max_bonus_flat? : number;
+  max_bonus_pctg? : number;
+
+  curr? : number;
 }
 
-export class Stat {
-  #m__value__base: number;
-  #m__value__base_bonusFLAT: number;
-  #m__value__base_bonusPCTG: number;
 
-  #m__value__max: number;
-  #m__value__max_bonusFLAT: number;
-  #m__value__max_bonusPCTG: number;
+export class Stat
+{
+  kind : Stat__Kind;
+  
+  base : number;
+  base_bonus_flat : number;
+  base_bonus_pctg : number;
 
-  #m__value__cap: number;
-  #m__value__curr: number;
+  max : number;
+  max_bonus_flat : number;
+  max_bonus_pctg : number;
 
-  constructor(p__Stat__Args: Stat__Args) {
-    this.#m__value__base = p__Stat__Args.value__base;
-    this.#m__value__base_bonusFLAT = p__Stat__Args.value__base_bonusFLAT || 0;
-    this.#m__value__base_bonusPCTG = p__Stat__Args.value__base_bonusPCTG ||
-      1.000;
+  cap : number;
 
-    this.#m__value__max =
-      ((this.#m__value__base + this.#m__value__base_bonusFLAT) *
-        this.#m__value__base_bonusPCTG);
+  curr : number;
 
-    this.#m__value__max_bonusFLAT = p__Stat__Args.value__max_bonusFLAT || 0;
-    this.#m__value__max_bonusPCTG = p__Stat__Args.value__max_bonusPCTG || 1.000;
 
-    this.#m__value__cap =
-      ((this.#m__value__max + this.#m__value__max_bonusFLAT) *
-        this.#m__value__max_bonusPCTG);
+  constructor(p__Stat__Args : Stat__Args)
+  {
+    this.kind = p__Stat__Args.kind;
+    
+    this.base = p__Stat__Args.base;
+    this.base_bonus_flat = (p__Stat__Args.base_bonus_flat || 0);
+    this.base_bonus_pctg = (p__Stat__Args.base_bonus_pctg || 1);
 
-    this.#m__value__curr = p__Stat__Args.value__curr || this.#m__value__cap;
+    this.max = ((this.base + this.base_bonus_flat) * this.base_bonus_pctg);
+    this.max_bonus_flat = (p__Stat__Args.max_bonus_flat || 0);
+    this.max_bonus_pctg = (p__Stat__Args.max_bonus_pctg || 1);
+
+    this.cap = ((this.max + this.max_bonus_flat) * this.max_bonus_pctg);
+
+    this.curr = (p__Stat__Args.curr || this.cap);
   }
-
-  public get(): number {
-    return (this.#m__value__curr);
-  }
-
-  public static to_SERVER_msg(p__Stat: Stat) {
-    return ({
-      value__base: p__Stat.#m__value__base,
-      value__base_bonusFLAT: p__Stat.#m__value__base_bonusFLAT,
-      value__base_bonusPCTG: p__Stat.#m__value__base_bonusPCTG,
-      value__max: p__Stat.#m__value__max,
-      value__max_bonusFLAT: p__Stat.#m__value__max_bonusFLAT,
-      value__max_bonusPCTG: p__Stat.#m__value__max_bonusPCTG,
-      value__cap: p__Stat.#m__value__cap,
-      value__curr: p__Stat.#m__value__curr,
-    });
+  
+  public get() : number {
+    return (this.curr);
   }
 }

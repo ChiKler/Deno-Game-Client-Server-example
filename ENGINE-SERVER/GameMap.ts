@@ -25,38 +25,47 @@ export interface GameMap__Args {
   GameMap__ID: GameMap__ID;
 }
 
-export class GameMap {
-  static Players_Buffer = class<T> {
+export class GameMap
+{
+  static Players_Buffer = class<T>
+  {
     #data: Array<T>; // should use ArrayBuffer as buffer and Uint8Array as view
-
-    constructor() {
+    
+    
+    constructor()
+    {
       this.#data = new Array<T>();
     }
-
-    pass(t: T): number {
+    
+    
+    pass(t: T): number
+    {
       return (this.#data.push(t));
     }
-    take(): (T | undefined) {
+    
+    take(): (T | undefined)
+    {
       return (this.#data.pop());
     }
   };
-  static Players_BufferIn = class extends GameMap.Players_Buffer<Player> {
-  };
-  static Players_BufferOut__data__Ty = class {
-    m__Player: Player;
-    m__isToBeDisconnected: boolean;
-    m__GameMap__ID__target: (GameMap__ID | undefined);
-
+  static Players_BufferIn = class extends GameMap.Players_Buffer<Player> {};
+  static Players_BufferOut__data__Ty = class
+  {
+    Player: Player;
+    isToBeDisconnected: boolean;
+    GameMap__ID__target: (GameMap__ID | undefined);
+    
+    
     constructor(
       p__Player: Player,
       p__isToBeDisconnected: boolean,
       p__GameMap__ID__target?: GameMap__ID,
     ) {
-      this.m__Player = p__Player;
-      this.m__isToBeDisconnected = p__isToBeDisconnected;
-
+      this.Player = p__Player;
+      this.isToBeDisconnected = p__isToBeDisconnected;
+      
       if (p__isToBeDisconnected) {
-        this.m__GameMap__ID__target = undefined;
+        this.GameMap__ID__target = undefined;
       } else {
         if (p__GameMap__ID__target == undefined) {
           try {
@@ -67,14 +76,13 @@ export class GameMap {
             console.error(err);
           }
         } else {
-          this.m__GameMap__ID__target = p__GameMap__ID__target;
+          this.GameMap__ID__target = p__GameMap__ID__target;
         }
       }
     }
   };
-  static Players_BufferOut = class extends // @ts-ignore
-  GameMap.Players_Buffer<GameMap.Players_BufferOut__data__Ty> {
-  };
+  // @ts-ignore
+  static Players_BufferOut = class extends GameMap.Players_Buffer<GameMap.Players_BufferOut__data__Ty> {};
 
   static PetitionToDisconnectPlayer = class {
     hasBeenDisconnected: boolean;
@@ -97,12 +105,9 @@ export class GameMap {
   #m__Players_BufferIn: GameMap.Players_BufferIn;
   // @ts-ignore
   #m__Players_BufferOut: GameMap.Players_BufferOut;
-
-  #m__PetitionsToDisconnectPlayer_Map: Map<
-    number,
-    // @ts-ignore
-    GameMap.PetitionToDisconnectPlayer
-  >;
+  
+  // @ts-ignore
+  #m__PetitionsToDisconnectPlayer : { [key : string] : GameMap.PetitionToDisconnectPlayer };
 
   private constructor(p__GameMap__Args: GameMap__Args) {
     this.m__GameMap__ID = p__GameMap__Args.GameMap__ID;
@@ -114,11 +119,7 @@ export class GameMap {
     this.#m__Players_BufferIn = new GameMap.Players_BufferIn();
     this.#m__Players_BufferOut = new GameMap.Players_BufferOut();
 
-    this.#m__PetitionsToDisconnectPlayer_Map = new Map<
-      number,
-      // @ts-ignore
-      GameMap.PetitionToDisconnectPlayer
-    >();
+    this.#m__PetitionsToDisconnectPlayer = {};
   }
 
   #connect_Player__calls_in_progress = 0;
@@ -245,23 +246,24 @@ export class GameMap {
         statusText: `The Player with eeID ${eeID} wasn't found on any GameMap.`,
       });
     } else {
-      l__GameMap!.#m__PetitionsToDisconnectPlayer_Map.set(
+      l__GameMap!.#m__PetitionsToDisconnectPlayer.set(
         eeID,
         new GameMap.PetitionToDisconnectPlayer(),
       );
 
       while (
-        !l__GameMap!.#m__PetitionsToDisconnectPlayer_Map
+        !l__GameMap!.#m__PetitionsToDisconnectPlayer
           .get(eeID)!.hasBeenDisconnected
       ) {
         await sleep(20); // if possible I'd prefer doing something with a Promise instead of using a while loop
       }
-
+      
+      const l__GameMap__m__PetitionsToDisconnectPlayer__key = (eeID + "");
+      
       const l__PetitionToDisconnectPlayer = l__GameMap!
-        .#m__PetitionsToDisconnectPlayer_Map.get(eeID)!;
+        .#m__PetitionsToDisconnectPlayer[l__GameMap__m__PetitionsToDisconnectPlayer__key]!;
 
-      l__GameMap!.#m__PetitionsToDisconnectPlayer_Map
-        .delete(eeID);
+      delete l__GameMap!.#m__PetitionsToDisconnectPlayer[l__GameMap__m__PetitionsToDisconnectPlayer__key]
 
       --l__GameMap!.#disconnect_Player__calls_in_progress;
       return ({
@@ -334,7 +336,7 @@ export class GameMap {
 
   #update__isLoopRunning = false;
   #update__isLoopCompleted = true;
-  private async update(previous_loop_ms: number) {
+  private async update(previous_loop_ms : number) {
     this.#update__isLoopCompleted = false;
 
     const begin_ms = time_stamp();
@@ -349,20 +351,14 @@ export class GameMap {
     };
 
     {
-      const m__PetitionsToDisconnectPlayer_Map__keys = [
-        ...this.#m__PetitionsToDisconnectPlayer_Map.keys(),
-      ];
+      const m__PetitionsToDisconnectPlayer__keys = Object.keys(this.#m__PetitionsToDisconnectPlayer);
 
-      for (
-        let i = 0;
-        i < m__PetitionsToDisconnectPlayer_Map__keys.length;
-        i++
-      ) {
+      for (let i = 0; i < m__PetitionsToDisconnectPlayer__keys.length; i++) {
         try {
-          const eeID = m__PetitionsToDisconnectPlayer_Map__keys[i];
+          const m__PetitionsToDisconnectPlayer__key = m__PetitionsToDisconnectPlayer__keys[i];
+          const eeID = (+m__PetitionsToDisconnectPlayer__key);
 
-          const l__PetitionToDisconnectPlayer = this
-            .#m__PetitionsToDisconnectPlayer_Map.get(eeID)!;
+          const l__PetitionToDisconnectPlayer = this.#m__PetitionsToDisconnectPlayer[m__PetitionsToDisconnectPlayer__key]!;
           const l__Player__to_be_disconnected = this.#m__Players.get(eeID)!;
 
           this.#m__Players.delete(eeID);
@@ -381,7 +377,7 @@ export class GameMap {
 
           l__PetitionToDisconnectPlayer.hasBeenDisconnected = true;
         } catch {
-          // this happens when m__PetitionsToDisconnectPlayer_Map.get(eeID)
+          // this happens when (l__PetitionToDisconnectPlayer)
           // is undefined because it got deleted at GameMap.disconnect_player()
           // (do nothing with the error, just catch it)
         }
@@ -524,13 +520,15 @@ export class GameMap {
     g__GameMaps: Map<GameMap__ID, GameMap>,
     g__server__isRunning: boolean,
   ): Promise<void> {
-    const handler_loop = async (): Promise<void> => {
-      while (g__server__isRunning) {
+    const handler_loop = async () : Promise<void> =>
+    {
+      while (g__server__isRunning)
+      {
         const begin_ms = time_stamp();
         const min_ms = 20;
         const max_ms = 40;
 
-        const elapsed_ms = (): number => {
+        const elapsed_ms = () : number => {
           return (time_stamp() - begin_ms);
         };
 
@@ -544,23 +542,23 @@ export class GameMap {
               undefined
           ) {
             if (
-              l__GameMap__Players_BufferOut__take__ReVa.m__isToBeDisconnected
+              l__GameMap__Players_BufferOut__take__ReVa.isToBeDisconnected
             ) {
               console.log(
-                `The Player with eeID ${l__GameMap__Players_BufferOut__take__ReVa.m__Player.eeID} is to be disconnected from g__GameMaps. This option needs to be implemented.`,
+                `The Player with eeID ${l__GameMap__Players_BufferOut__take__ReVa.Player.eeID} is to be disconnected from g__GameMaps. This option needs to be implemented.`,
               );
             } else {
               if (
                 g__GameMaps.get(
                   l__GameMap__Players_BufferOut__take__ReVa
-                    .m__GameMap__ID__target!,
+                    .GameMap__ID__target!,
                 )! != undefined
               ) {
                 g__GameMaps.get(
                   l__GameMap__Players_BufferOut__take__ReVa
-                    .m__GameMap__ID__target!,
+                    .GameMap__ID__target!,
                 )!.#m__Players_BufferIn.pass(
-                  l__GameMap__Players_BufferOut__take__ReVa.m__Player,
+                  l__GameMap__Players_BufferOut__take__ReVa.Player,
                 );
               }
             }

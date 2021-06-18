@@ -16,6 +16,7 @@ class Shape
     
     p__GameEntities.forEach((p__GameEntity) => {
       let found = false;
+      // @ts-ignore
       const p__GameEntity__m__GameObject__HitBox = p__GameEntity.m__GameObject.HitBox;
       const p__GameEntity__m__GameObject__HitBox__Rectangles = p__GameEntity__m__GameObject__HitBox.Rectangles;
       for (let i = 0; i < p__GameEntity__m__GameObject__HitBox__Rectangles.length; i++)
